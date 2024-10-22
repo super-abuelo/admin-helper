@@ -1,6 +1,6 @@
 .main-body{
-    position:fixed;
-    margin-top: 5rem;
+    margin-top: 70px;
     background-color: #F4F7F5;
-    height: 1000px;
+    color: black;
+    min-height: 1000px;
 }
