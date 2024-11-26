@@ -13,7 +13,7 @@ export const NavBar = () => {
             <NavLink to={"/cierrecaja"}>Cierre de Caja</NavLink>
             <NavLink to={"/cierresrealizados"}>Cierres Realizados</NavLink>
             {/* <NavLink to={"/home"}></NavLink> */}
-            <a>Inicio Sesion</a>
+            <a>Inicio Sesión</a>
           </div>
         </div>
       </nav>
