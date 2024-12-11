@@ -1,14 +1,26 @@
-import React from "react";
+import React, { FormEvent, useState } from "react";
 import { useMultistepForm } from "../../hooks/useMultistepForm";
 import CreditsForm from "../../components/credits/CreditsForm";
 import BillsForm from "../../components/bills/BillsForm";
+import CashOpeningForm from "../../components/cashOpening/CashOpeningForm";
+import CoinsForm from "../../components/coins/CoinsForm";
+import ServicesForm from "../../components/services/ServicesForm";
+import TotalAmounts from "../../components/totalAmounts/TotalAmounts";
+
+const initialData = {};
 
 export const CashClosing = () => {
+  const [data, setData] = useState(initialData);
   const { steps, currentStepIndex, step, isFirstStep, isLastStep, back, next } =
-    useMultistepForm([<CreditsForm />, <BillsForm />]);
+    useMultistepForm([<CreditsForm /> , <BillsForm/>, <CoinsForm/>,<CashOpeningForm/>, <TotalAmounts/>, <ServicesForm/>]);
+
+  function onSubmit(e: FormEvent) {
+    e.preventDefault();
+    next();
+  }
   return (
     <div>
-      <form>
+      <form onSubmit={onSubmit}>
         {step}
         <div
           style={{
@@ -24,7 +36,7 @@ export const CashClosing = () => {
             </button>
           )}
           {
-            <button type="button" onClick={next}>
+            <button type="submit">
               {isLastStep ? "Finalizar" : "Siguiente"}
             </button>
           }
