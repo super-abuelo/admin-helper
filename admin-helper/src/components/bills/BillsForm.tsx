@@ -10,7 +10,7 @@ function BillsForm() {
             <tr>
               <th className="col-4">Denominación</th>
               <th className="col-4">Cantidad</th>
-              <th className="col">Total</th>
+              <th className="col-4">Total</th>
             </tr>
           </thead>
           <tbody>
@@ -19,7 +19,10 @@ function BillsForm() {
                 <label className="my-2">20 000</label>
               </td>
               <td>
-                <input className="form-control border-0 text-center" />
+                <input type="number" className="form-control border-0 text-center" />
+              </td>
+              <td>
+                <label className="my-2">-</label>
               </td>
             </tr>
             <tr>
@@ -29,6 +32,9 @@ function BillsForm() {
               <td>
                 <input className="form-control border-0 text-center" />
               </td>
+              <td>
+                <label className="my-2">-</label>
+              </td>
             </tr>
             <tr>
               <td>
@@ -36,6 +42,9 @@ function BillsForm() {
               </td>
               <td>
                 <input className="form-control border-0 text-center" />
+              </td>
+              <td>
+                <label className="my-2">-</label>
               </td>
             </tr>
             <tr>
@@ -45,6 +54,9 @@ function BillsForm() {
               <td>
                 <input className="form-control border-0 text-center" />
               </td>
+              <td>
+                <label className="my-2">-</label>
+              </td>
             </tr>
             <tr>
               <td>
@@ -52,6 +64,9 @@ function BillsForm() {
               </td>
               <td>
                 <input className="form-control border-0 text-center" />
+              </td>
+              <td>
+                <label className="my-2">-</label>
               </td>
             </tr>
           </tbody>

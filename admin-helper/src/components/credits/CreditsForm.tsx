@@ -1,8 +1,9 @@
 import React from "react";
+import "./CreditsForm.css"
 
 function CreditsForm() {
   return (
-    <div>
+    <div className="from">
       <h1 className="my-3">Créditos</h1>
       <div className="d-flex justify-content-center">
         <table className="table table-striped-columns table-bordered w-50 shadow">
