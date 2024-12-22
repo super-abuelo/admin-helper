@@ -49,7 +49,7 @@ function ServicesForm() {
         </div>
         <div className="row my-2 justify-content-center">
           <div className="col-2 d-flex justify-content-start align-items-center">
-            <label>Avance BAC:</label>
+            <label>Avance BAC</label>
           </div>
           <div className="col-2">
             <input type="number" className="form-control text-center" />
