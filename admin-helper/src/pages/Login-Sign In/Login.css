@@ -1,3 +1,21 @@
-.card{
-    
+.form-container {
+  position: relative;
+  padding: 20px;
+  background-color: #2871ba; /* Ejemplo: color del fondo */
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+
+.back-button {
+    position: absolute;
+    top: 15%; /* Ajusta según sea necesario */
+    left: 32%;
+    transform: translateX(-50%);
+    background-color: #6c757d; /* Color del botón */
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 5px 10px;
+    cursor: pointer;
+    z-index: 10; /* Asegúrate de que quede encima */
+  }
