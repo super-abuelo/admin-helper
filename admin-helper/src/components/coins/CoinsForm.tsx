@@ -1,12 +1,12 @@
 
 type CoinsData = {
   denominacionesMonedas: {
-    quinientos: number;
-    cien: number;
-    cincuenta: number;
-    veinticinco: number;
-    diez: number;
-    cinco: number;
+    quinientos?: number;
+    cien?: number;
+    cincuenta?: number;
+    veinticinco?: number;
+    diez?: number;
+    cinco?: number;
   };
   monedasTotal: number;
 };

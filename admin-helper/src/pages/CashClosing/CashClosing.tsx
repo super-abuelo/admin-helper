@@ -7,154 +7,185 @@ import CoinsForm from "../../components/coins/CoinsForm";
 import ServicesForm from "../../components/services/ServicesForm";
 import TotalAmounts from "../../components/totalAmounts/TotalAmounts";
 import "animate.css";
+import ClosingModal from "../../components/closingModal/ClosingModal";
 
-type cashOpeningData = {
-  apertura: number;
-  facturasPagadas: number;
-  facturasProcesadas: number;
-  notasCredito: number;
-  reintegros: number;
-  totalBruto: number;
-};
-
-type TotalAmountsData = {
-  efectivo: number; // Efectivo
-  monedas: number; // Monedas
-  dolares: number; // Dólares ($)
-  colones: number; // Dólares (¢)
-  datafonosBAC: number; // Datáfonos BAC
-  datafonosBCR: number; // Datáfonos BCR
-  total: number; // Total
-  pagoProveedores: number; // Pago Proveedores
-  creditos: number; // Créditos
-  retirosDeCaja: number; // Retiros de Caja
-  diferencia: number; // Diferencia
-};
-
-
-type allData = {
-  apertura: number;
-  facturasPagadas: number;
-  facturasProcesadas: number;
-  notasCredito: number;
-  reintegros: number;
-  totalBruto: number;
-  efectivo: number; // Efectivo
-  monedas: number; // Monedas
-  dolares: number; // Dólares ($)
-  colones: number; // Dólares (¢)
-  datafonosBAC: number; // Datáfonos BAC
-  datafonosBCR: number; // Datáfonos BCR
-  total: number; // Total
-  pagoProveedores: number; // Pago Proveedores
-  creditosTotal: number; // Créditos
-  retirosDeCaja: number; // Retiros de Caja
-  diferencia: number;
-  serviciosBAC: number; // Servicios BAC
-  depositosBAC: number; // Depósitos BAC
-  totalBAC: number; // Total BAC
-  avanceBAC: number; // Avance BAC
-  serviciosTucan: number; // Servicios Tucan
-  depositosTucan: number; // Depósitos Tucan
-  totalTucan: number; // Total Tucan
-  avanceBCR: number; // Avance BCR
-  notas: string; // Notas
-  denominaciones: {
-    cincuentaMil: number;
-    veinteMil: number;
-    diezMil: number;
-    cincoMil: number;
-    dosMil: number;
-    mil: number;
+export type allData = {
+  cashOpening: {
+    apertura?: number;
+    facturasPagadas?: number;
+    facturasProcesadas?: number;
+    notasCredito?: number;
+    reintegros?: number;
+    totalBruto?: number;
   };
-  denominacionesMonedas : {
-    quinientos: number;
-    cien: number;
-    cincuenta: number;
-    veinticinco: number;
-    diez: number;
-    cinco: number;
-  }
-  efectivoTotal: number;
-  monedasTotal: number;
-  creditos: {
+  totalAmounts: {
+    dolares?: number; // Dólares ($)
+    colones?: number; // Dólares (¢)
+    datafonosBAC?: number; // Datáfonos BAC
+    datafonosBCR?: number; // Datáfonos BCR
+    total?: number; // Total
+    pagoProveedores?: number; // Pago Proveedores
+    retirosDeCaja?: number; // Retiros de Caja
+    diferencia?: number;
+  };
+  services: {
+    serviciosBAC?: number; // Servicios BAC
+    depositosBAC?: number; // Depósitos BAC
+    totalBAC?: number; // Total BAC
+    avanceBAC?: number; // Avance BAC
+    serviciosTucan?: number; // Servicios Tucan
+    depositosTucan?: number; // Depósitos Tucan
+    totalTucan?: number; // Total Tucan
+    avanceBCR?: number; // Avance BCR
+    notas?: string; // Notas
+  };
+  denominaciones: {
+    cincuentaMil?: number;
+    veinteMil?: number;
+    diezMil?: number;
+    cincoMil?: number;
+    dosMil?: number;
+    mil?: number;
+  };
+  denominacionesMonedas: {
+    quinientos?: number;
+    cien?: number;
+    cincuenta?: number;
+    veinticinco?: number;
+    diez?: number;
+    cinco?: number;
+  };
+  creditosData: {
     id: number; // Unique identifier for each credit
     name: string; // Name of the credit
     amount: number; // Amount of the credit
   }[];
+  efectivoTotal: number;
+  monedasTotal: number;
+  creditosTotal: number;
 };
-const initialData = {
-  apertura: 1,
-  facturasPagadas: 1,
-  facturasProcesadas: 1,
-  notasCredito: 1,
-  reintegros: 1,
-  totalBruto: 1,
-  efectivo: 1,
-  monedas: 1,
-  dolares: 1,
-  colones: 1,
-  datafonosBAC: 1,
-  datafonosBCR: 1,
-  total: 1,
-  pagoProveedores: 1,
-  creditosTotal: 1,
-  retirosDeCaja: 1,
-  diferencia: 1,
-  serviciosBAC: 1,
-  depositosBAC: 1,
-  totalBAC: 1,
-  avanceBAC: 1,
-  serviciosTucan: 1,
-  depositosTucan: 1,
-  totalTucan: 1,
-  avanceBCR: 1,
-  notas: "hola",
+export const initialData: allData = {
+  cashOpening: {
+    apertura: 0,
+    facturasPagadas: 0,
+    facturasProcesadas: 0,
+    notasCredito: 0,
+    reintegros: 0,
+    totalBruto: 0,
+  },
+  totalAmounts: {
+    dolares: 0,
+    colones: 0,
+    datafonosBAC: 0,
+    datafonosBCR: 0,
+    total: 0,
+    pagoProveedores: 0,
+    retirosDeCaja: 0,
+    diferencia: 0,
+  },
+  services: {
+    serviciosBAC: 0,
+    depositosBAC: 0,
+    totalBAC: 0,
+    avanceBAC: 0,
+    serviciosTucan: 0,
+    depositosTucan: 0,
+    totalTucan: 0,
+    avanceBCR: 0,
+    notas: "",
+  },
   denominaciones: {
-    cincuentaMil: 1,
+    cincuentaMil: 0,
     veinteMil: 0,
-    diezMil: 5,
-    cincoMil: 2,
-    dosMil: 1,
-    mil: 3,
+    diezMil: 0,
+    cincoMil: 0,
+    dosMil: 0,
+    mil: 0,
   },
-  denominacionesMonedas : {
-    quinientos: 1,
-    cien: 1,
-    cincuenta: 1,
-    veinticinco: 1,
-    diez: 1,
-    cinco: 5,
+  denominacionesMonedas: {
+    quinientos: 0,
+    cien: 0,
+    cincuenta: 0,
+    veinticinco: 0,
+    diez: 0,
+    cinco: 0,
   },
-  efectivoTotal: 1,
-  monedasTotal: 1,
-  creditosData: [
-    { id: 1, name: "Credit 1", amount: 500 },
-    { id: 2, name: "Credit 2", amount: 1000 },
-    { id: 3, name: "Credit 3", amount: 1500 },
-  ],
+  creditosData: [{ id: 1, name: "", amount: 0 }],
+  efectivoTotal: 0,
+  monedasTotal: 0,
+  creditosTotal: 0,
 };
 
 export const CashClosing = () => {
+  const updateFields = (fields: Partial<allData>) => {
+    setData((prev) => ({
+      ...prev,
+      cashOpening: {
+        ...prev.cashOpening,
+        ...fields.cashOpening,
+      },
+      totalAmounts: {
+        ...prev.totalAmounts,
+        ...fields.totalAmounts,
+      },
+      services: {
+        ...prev.services,
+        ...fields.services,
+      },
+      denominaciones: {
+        ...prev.denominaciones,
+        ...fields.denominaciones,
+      },
+      denominacionesMonedas: {
+        ...prev.denominacionesMonedas,
+        ...fields.denominacionesMonedas,
+      },
+      creditosData: fields.creditosData || prev.creditosData,
+      efectivoTotal: fields.efectivoTotal ?? prev.efectivoTotal,
+      monedasTotal: fields.monedasTotal ?? prev.monedasTotal,
+      creditosTotal: fields.creditosTotal ?? prev.creditosTotal,
+    }));
+  };
+
   const [data, setData] = useState(initialData);
   const [animation, setAnimation] = useState<string>("animate__fadeIn");
   const { steps, currentStepIndex, step, isFirstStep, isLastStep, back, next } =
     useMultistepForm([
-      <CreditsForm {...data} updateFields={updateFields}/>,
+      <CreditsForm {...data} updateFields={updateFields} />,
       <BillsForm {...data} updateFields={updateFields} />,
-      <CoinsForm {...data} updateFields={updateFields}/>,
-      <CashOpeningForm {...data} updateFields={updateFields} />,
-      <TotalAmounts {...data} updateFields={updateFields} />,
-      <ServicesForm {...data} updateFields={updateFields} />,
+      <CoinsForm {...data} updateFields={updateFields} />,
+      <CashOpeningForm
+        cashOpening={data.cashOpening || {}}
+        updateFields={(fields) => updateFields({ cashOpening: { ...fields } })}
+      />,
+      <TotalAmounts
+        totalAmounts={data.totalAmounts}
+        creditosTotal={data.creditosTotal}
+        efectivoTotal={data.efectivoTotal}
+        monedasTotal={data.monedasTotal}
+        cashOpening={data.cashOpening}
+        updateFields={(fields) => updateFields({ totalAmounts: { ...fields } })}
+      />,
+      <ServicesForm
+        cashOpening={data.cashOpening}
+        totalAmounts={data.totalAmounts}
+        servicesData={data.services}
+        updateFields={(fields) => updateFields({ services: { ...fields } })}
+      />,
     ]);
-
-  function updateFields(fields: Partial<allData>) {
-    setData((prev) => ({ ...prev, ...fields }));
-  }
 
   function onSubmit(e: FormEvent) {
     e.preventDefault();
-    next();
+    if (!isLastStep) {
+      if (currentStepIndex == 2) {
+        alert("Creditos cerrando...")
+      }
+      return next();
+    } else {
+      // const closingModal = ClosingModal();
+      // closingModal.show()
+    }
+
   }
   return (
     <div>

@@ -2,12 +2,12 @@ import React from "react";
 
 type BillsData = {
   denominaciones: {
-    cincuentaMil: number;
-    veinteMil: number;
-    diezMil: number;
-    cincoMil: number;
-    dosMil: number;
-    mil: number;
+    cincuentaMil?: number;
+    veinteMil?: number;
+    diezMil?: number;
+    cincoMil?: number;
+    dosMil?: number;
+    mil?: number;
   };
   efectivoTotal: number;
 };

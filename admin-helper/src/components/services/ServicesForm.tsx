@@ -1,4 +1,6 @@
 import React from "react";
+import { allData } from "../../pages/CashClosing/CashClosing";
+
 type ServicesData = {
   serviciosBAC: number; // Servicios BAC
   depositosBAC: number; // Depósitos BAC
@@ -11,22 +13,65 @@ type ServicesData = {
   notas: string; // Notas
 };
 
-type ServicesProps = ServicesData & {
-  updateFields: (fields: Partial<ServicesData>) => void;
+type ServicesProps = {
+  servicesData: allData["services"];
+  cashOpening: allData["cashOpening"];
+  totalAmounts: allData["totalAmounts"];
+  updateFields: (fields: Partial<allData["services"]>) => void;
 };
 
+// type ServicesProps = ServicesData & {
+//   updateFields: (fields: Partial<ServicesData>) => void;
+// };
+
 function ServicesForm({
-  serviciosBAC,
-  depositosBAC,
-  totalBAC,
-  avanceBAC,
-  serviciosTucan,
-  depositosTucan,
-  totalTucan,
-  avanceBCR,
-  notas,
+  servicesData: {
+    serviciosBAC,
+    depositosBAC,
+    totalBAC,
+    avanceBAC,
+    serviciosTucan,
+    depositosTucan,
+    totalTucan,
+    avanceBCR,
+    notas,
+  },
+  totalAmounts: { total },
+  cashOpening: { totalBruto },
   updateFields,
 }: ServicesProps) {
+  const calculateDifferenceBac = (
+    newValues: Partial<ServicesProps>["servicesData"]
+  ) => {
+    const updatedDeposito = newValues!.depositosBAC ?? depositosBAC;
+    const updatedServices = newValues!.serviciosBAC ?? serviciosBAC;
+
+    const newTotalBac = updatedDeposito! + updatedServices!;
+
+    updateFields({ ...newValues, totalBAC: newTotalBac });
+  };
+
+  const calculateDifferenceBcr = (
+    newValues: Partial<ServicesProps>["servicesData"]
+  ) => {
+    const updatedDeposito = newValues!.depositosTucan ?? depositosTucan;
+    const updatedServices = newValues!.serviciosTucan ?? serviciosTucan;
+
+    const newTotalBcr = updatedDeposito! + updatedServices!;
+
+    updateFields({ ...newValues, totalTucan: newTotalBcr });
+  };
+
+  const handleInputChange = (
+    value: string,
+    field: keyof ServicesProps["servicesData"]
+  ) => {
+    if (value.startsWith("0") && value.length > 1) {
+      value = value.slice(1);
+    }
+    updateFields({ [field]: value === "" ? 0 : Number(value) });
+  };
+
   return (
     <div>
       <h1 className="my-4">3 / 3</h1>
@@ -40,9 +85,14 @@ function ServicesForm({
               type="number"
               className="form-control text-center"
               value={serviciosBAC}
-              onChange={(e) =>
-                updateFields({ serviciosBAC: Number.parseInt(e.target.value) })
-              }
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                updateFields({ serviciosBAC: Number.parseInt(e.target.value) });
+                calculateDifferenceBac({
+                  serviciosBAC:
+                    inputValue === "" ? 0 : Number.parseInt(inputValue),
+                });
+              }}
             />
           </div>
           <div className="col-2 d-flex justify-content-start align-items-center">
@@ -53,11 +103,16 @@ function ServicesForm({
               type="number"
               className="form-control text-center"
               value={serviciosTucan}
-              onChange={(e) =>
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                calculateDifferenceBcr({
+                  serviciosTucan:
+                    inputValue === "" ? 0 : Number.parseInt(inputValue),
+                });
                 updateFields({
                   serviciosTucan: Number.parseInt(e.target.value),
-                })
-              }
+                });
+              }}
             />
           </div>
         </div>
@@ -70,9 +125,18 @@ function ServicesForm({
               type="number"
               className="form-control text-center"
               value={depositosBAC}
-              onChange={(e) =>
-                updateFields({ depositosBAC: Number.parseInt(e.target.value) })
-              }
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                updateFields({
+                  depositosBAC:
+                    inputValue === "" ? 0 : Number.parseInt(inputValue),
+                });
+
+                calculateDifferenceBac({
+                  depositosBAC:
+                    inputValue === "" ? 0 : Number.parseInt(inputValue),
+                });
+              }}
             />
           </div>
           <div className="col-2 d-flex justify-content-start align-items-center">
@@ -83,11 +147,17 @@ function ServicesForm({
               type="number"
               className="form-control text-center"
               value={depositosTucan}
-              onChange={(e) =>
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                calculateDifferenceBcr({
+                  depositosTucan:
+                    inputValue === "" ? 0 : Number.parseInt(inputValue),
+                });
+                console.log("????");
                 updateFields({
                   depositosTucan: Number.parseInt(e.target.value),
-                })
-              }
+                });
+              }}
             />
           </div>
         </div>
@@ -100,6 +170,7 @@ function ServicesForm({
               type="number"
               className="form-control text-center"
               value={totalBAC}
+              readOnly
               onChange={(e) =>
                 updateFields({ totalBAC: Number.parseInt(e.target.value) })
               }
@@ -113,6 +184,7 @@ function ServicesForm({
               type="number"
               className="form-control text-center"
               value={totalTucan}
+              readOnly
               onChange={(e) =>
                 updateFields({ totalTucan: Number.parseInt(e.target.value) })
               }
@@ -127,10 +199,15 @@ function ServicesForm({
             <input
               type="number"
               className="form-control text-center"
+              
               value={avanceBAC}
-              onChange={(e) =>
-                updateFields({ avanceBAC: Number.parseInt(e.target.value) })
-              }
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                updateFields({
+                  avanceBAC:
+                    inputValue === "" ? 0 : Number.parseInt(inputValue),
+                });
+              }}
             />
           </div>
           <div className="col-2 d-flex justify-content-start align-items-center">
@@ -141,9 +218,13 @@ function ServicesForm({
               type="number"
               className="form-control text-center"
               value={avanceBCR}
-              onChange={(e) =>
-                updateFields({ avanceBCR: Number.parseInt(e.target.value) })
-              }
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                updateFields({
+                  avanceBCR:
+                    inputValue === "" ? 0 : Number.parseInt(inputValue),
+                });
+              }}
             />
           </div>
         </div>
@@ -155,12 +236,15 @@ function ServicesForm({
             onChange={(e) => updateFields({ notas: e.target.value })}
           ></textarea>
         </div>
-        <div className="row my-3 justify-content-center">
+        <div className="row my-2 justify-content-center">
           <div className="col-2">
-            <label> Total Bruto: -</label>
+            <label> Total B: {totalBruto}</label>
           </div>
           <div className="col-2">
-            <label> Total: -</label>
+            <label> Total: {total}</label>
+          </div>
+          <div className="col-2">
+            <label> Diferencia: {totalBruto! - total!}</label>
           </div>
         </div>
       </div>

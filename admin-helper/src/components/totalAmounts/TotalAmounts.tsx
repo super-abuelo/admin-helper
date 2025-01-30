@@ -1,37 +1,68 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { allData } from "../../pages/CashClosing/CashClosing";
+import { initialData } from "../../pages/CashClosing/CashClosing";
 
-type TotalAmountsData = {
-  efectivo: number; // Efectivo
-  monedas: number; // Monedas
-  dolares: number; // Dólares ($)
-  colones: number; // Dólares (¢)
-  datafonosBAC: number; // Datáfonos BAC
-  datafonosBCR: number; // Datáfonos BCR
-  total: number; // Total
-  pagoProveedores: number; // Pago Proveedores
-  creditosTotal: number; // Créditos
-  retirosDeCaja: number; // Retiros de Caja
-  diferencia: number; // Diferencia
-};
-
-type TotalAmountsProps = TotalAmountsData & {
-  updateFields: (fields: Partial<TotalAmountsData>) => void;
+type TotalAmountsProps = {
+  totalAmounts: allData["totalAmounts"];
+  creditosTotal: allData["creditosTotal"];
+  efectivoTotal: allData["efectivoTotal"];
+  monedasTotal: allData["monedasTotal"];
+  cashOpening: allData["cashOpening"];
+  updateFields: (
+    fields: Partial<allData["totalAmounts"]> &
+      Partial<Pick<allData, "creditosTotal" | "efectivoTotal" | "monedasTotal">>
+  ) => void;
 };
 
 function TotalAmounts({
-  efectivo,
-  monedas,
-  dolares,
-  colones,
-  datafonosBAC,
-  datafonosBCR,
-  total,
-  pagoProveedores,
+  totalAmounts: {
+    dolares,
+    colones,
+    datafonosBAC,
+    datafonosBCR,
+    total,
+    pagoProveedores,
+    retirosDeCaja,
+    diferencia,
+  },
+  cashOpening: {
+    apertura,
+    facturasPagadas,
+    facturasProcesadas,
+    notasCredito,
+    reintegros,
+    totalBruto,
+  },
   creditosTotal,
-  retirosDeCaja,
-  diferencia,
+  efectivoTotal,
+  monedasTotal,
+
   updateFields,
 }: TotalAmountsProps) {
+  const calculateTotal = (
+    newValues: Partial<TotalAmountsProps["totalAmounts"]>
+  ) => {
+    const updatedDolares = newValues.dolares ?? dolares;
+    const updatedColones = newValues.colones ?? colones;
+    const updatedDatafonosBAC = newValues.datafonosBAC ?? datafonosBAC;
+    const updatedDatafonosBCR = newValues.datafonosBCR ?? datafonosBCR;
+    const updatedPagoProveedores = newValues.pagoProveedores ?? pagoProveedores;
+    const updatedRetirosDeCaja = newValues.retirosDeCaja ?? retirosDeCaja;
+
+    const newTotal =
+      efectivoTotal +
+      monedasTotal +
+      creditosTotal +
+      updatedDolares! +
+      updatedColones! +
+      updatedDatafonosBAC! +
+      updatedDatafonosBCR! +
+      updatedPagoProveedores! +
+      updatedRetirosDeCaja!;
+
+    updateFields({ ...newValues, total: newTotal });
+    updateFields({ diferencia: totalBruto! - total! });
+  };
   return (
     <div>
       <h1 className="my-4">2 / 3</h1>
@@ -44,10 +75,8 @@ function TotalAmounts({
             <input
               type="number"
               className="form-control text-center"
-              value={efectivo}
-              onChange={(e) =>
-                updateFields({ efectivo: Number.parseInt(e.target.value) })
-              }
+              readOnly
+              value={efectivoTotal}
             />
           </div>
           <div className="col-2 d-flex justify-content-start align-items-center">
@@ -58,9 +87,16 @@ function TotalAmounts({
               type="number"
               className="form-control text-center"
               value={datafonosBCR}
-              onChange={(e) =>
-                updateFields({ datafonosBCR: Number.parseInt(e.target.value) })
-              }
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                calculateTotal({
+                  datafonosBCR: Number(e.target.value) || 0,
+                });
+                updateFields({
+                  datafonosBCR:
+                    inputValue === "" ? 0 : Number.parseInt(inputValue),
+                });
+              }}
             />
           </div>
         </div>
@@ -72,10 +108,8 @@ function TotalAmounts({
             <input
               type="number"
               className="form-control text-center"
-              value={monedas}
-              onChange={(e) =>
-                updateFields({ monedas: Number.parseInt(e.target.value) })
-              }
+              value={monedasTotal}
+              readOnly
             />
           </div>
           <div className="col-2 d-flex justify-content-start align-items-center">
@@ -86,17 +120,22 @@ function TotalAmounts({
               type="number"
               className="form-control text-center"
               value={pagoProveedores}
-              onChange={(e) =>
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                calculateTotal({
+                  pagoProveedores: Number(e.target.value) || 0,
+                });
                 updateFields({
-                  pagoProveedores: Number.parseInt(e.target.value),
-                })
-              }
+                  pagoProveedores:
+                    inputValue === "" ? 0 : Number.parseInt(inputValue),
+                });
+              }}
             />
           </div>
         </div>
         <div className="row my-2 justify-content-center">
           <div className="col-2 d-flex justify-content-start align-items-center">
-            <label>Dólares:</label>
+            <label>Dólares ($/₡):</label>
           </div>
           <div className="col-2 d-flex">
             <input
@@ -104,18 +143,27 @@ function TotalAmounts({
               className="form-control text-center w-50"
               placeholder="$"
               value={dolares}
-              onChange={(e) =>
-                updateFields({ dolares: Number.parseInt(e.target.value) })
-              }
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                updateFields({
+                  dolares: inputValue === "" ? 0 : Number.parseInt(inputValue),
+                });
+              }}
             />
             <input
               type="number"
               className="form-control text-center w-50"
               placeholder="₡"
               value={colones}
-              onChange={(e) =>
-                updateFields({ colones: Number.parseInt(e.target.value) })
-              }
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                calculateTotal({
+                  colones: Number(e.target.value) || 0,
+                });
+                updateFields({
+                  colones: inputValue === "" ? 0 : Number.parseInt(inputValue),
+                });
+              }}
             />
           </div>
           <div className="col-2 d-flex justify-content-start align-items-center">
@@ -126,9 +174,7 @@ function TotalAmounts({
               type="number"
               className="form-control text-center"
               value={creditosTotal}
-              onChange={(e) =>
-                updateFields({ creditosTotal: Number.parseInt(e.target.value) })
-              }
+              readOnly
             />
           </div>
         </div>
@@ -141,9 +187,16 @@ function TotalAmounts({
               type="number"
               className="form-control text-center"
               value={datafonosBAC}
-              onChange={(e) =>
-                updateFields({ datafonosBAC: Number.parseInt(e.target.value) })
-              }
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                calculateTotal({
+                  datafonosBAC: Number(e.target.value) || 0,
+                });
+                updateFields({
+                  datafonosBAC:
+                    inputValue === "" ? 0 : Number.parseInt(inputValue),
+                });
+              }}
             />
           </div>
           <div className="col-2 d-flex justify-content-start align-items-center">
@@ -154,9 +207,16 @@ function TotalAmounts({
               type="number"
               className="form-control text-center"
               value={retirosDeCaja}
-              onChange={(e) =>
-                updateFields({ retirosDeCaja: Number.parseInt(e.target.value) })
-              }
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                calculateTotal({
+                  retirosDeCaja: Number(e.target.value) || 0,
+                });
+                updateFields({
+                  retirosDeCaja:
+                    inputValue === "" ? 0 : Number.parseInt(inputValue),
+                });
+              }}
             />
           </div>
         </div>
@@ -169,9 +229,15 @@ function TotalAmounts({
               type="number"
               className="form-control text-center"
               readOnly
-              value={total}
-              onChange={(e) =>
-                updateFields({ total: Number.parseInt(e.target.value) })
+              value={
+                efectivoTotal +
+                monedasTotal +
+                colones! +
+                datafonosBAC! +
+                datafonosBCR! +
+                pagoProveedores! +
+                creditosTotal +
+                retirosDeCaja!
               }
             />
           </div>
@@ -183,7 +249,7 @@ function TotalAmounts({
               type="number"
               className="form-control text-center"
               readOnly
-              value={diferencia}
+              value={totalBruto! - total!}
               onChange={(e) =>
                 updateFields({ diferencia: Number.parseInt(e.target.value) })
               }
@@ -192,7 +258,7 @@ function TotalAmounts({
         </div>
         <div className="row my-3 justify-content-center">
           <div className="col">
-            <label> Total Bruto: -</label>
+            <label> Total Bruto: {totalBruto}</label>
           </div>
         </div>
       </div>

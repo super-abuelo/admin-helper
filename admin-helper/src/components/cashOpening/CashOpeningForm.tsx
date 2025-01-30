@@ -1,27 +1,40 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { allData } from "../../pages/CashClosing/CashClosing";
 
-type CashOpeningData = {
-  apertura: number;
-  facturasPagadas: number;
-  facturasProcesadas: number;
-  notasCredito: number;
-  reintegros: number;
-  totalBruto: number;
+type CashOpeningProps = {
+  cashOpening: allData["cashOpening"];
+  updateFields: (fields: Partial<allData["cashOpening"]>) => void;
 };
 
-type CashOpeningProps = CashOpeningData & {
-  updateFields: (fields: Partial<CashOpeningData>) => void;
-};
+function CashOpeningForm({ cashOpening, updateFields }: CashOpeningProps) {
+  const {
+    apertura = 0,
+    facturasPagadas = 0,
+    facturasProcesadas = 0,
+    notasCredito = 0,
+    reintegros = 0,
+    totalBruto = 0,
+  } = cashOpening;
 
-function CashOpeningForm({
-  apertura,
-  facturasPagadas,
-  facturasProcesadas,
-  notasCredito,
-  reintegros,
-  totalBruto,
-  updateFields,
-}: CashOpeningProps) {
+  const calculateTotalBruto = (newValues: Partial<allData["cashOpening"]>) => {
+    const updatedApertura = newValues.apertura ?? apertura;
+    const updatedFacturasProcesadas =
+      newValues.facturasProcesadas ?? facturasProcesadas;
+    const updatedFacturasPagadas = newValues.facturasPagadas ?? facturasPagadas;
+    const updatedReintegros = newValues.reintegros ?? reintegros;
+    const updatedNotasCredito = newValues.notasCredito ?? notasCredito;
+
+    // Calculate totalBruto dynamically
+    const newTotalBruto =
+      updatedApertura +
+      updatedFacturasProcesadas +
+      updatedReintegros +
+      updatedFacturasPagadas -
+      updatedNotasCredito;
+
+    updateFields({ ...newValues, totalBruto: newTotalBruto });
+  };
+
   return (
     <div>
       <h1 className="my-4">1 / 3</h1>
@@ -33,11 +46,15 @@ function CashOpeningForm({
           <div className="col-2">
             <input
               type="number"
-              className="form-control"
+              className="form-control text-center"
               value={apertura}
-              onChange={(e) =>
-                updateFields({ apertura: Number.parseInt(e.target.value) })
-              }
+              required
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                updateFields({
+                  apertura: inputValue === "" ? 0 : Number.parseInt(inputValue),
+                });
+              }}
             />
           </div>
           <div className="col-2 d-flex justify-content-start align-items-center">
@@ -46,13 +63,18 @@ function CashOpeningForm({
           <div className="col-2">
             <input
               type="number"
-              className="form-control"
+              className="form-control text-center"
               value={facturasPagadas}
-              onChange={(e) =>
+              onChange={(e) => {
+                const inputValue = e.target.value;
                 updateFields({
-                  facturasPagadas: Number.parseInt(e.target.value),
-                })
-              }
+                  facturasPagadas:
+                    inputValue === "" ? 0 : Number.parseInt(inputValue),
+                });
+                calculateTotalBruto({
+                  facturasPagadas: Number(e.target.value) || 0,
+                });
+              }}
             />
           </div>
         </div>
@@ -63,13 +85,19 @@ function CashOpeningForm({
           <div className="col-2">
             <input
               type="number"
-              className="form-control"
+              className="form-control text-center"
               value={facturasProcesadas}
-              onChange={(e) =>
+              required
+              onChange={(e) => {
+                const inputValue = e.target.value;
                 updateFields({
-                  facturasProcesadas: Number.parseInt(e.target.value),
-                })
-              }
+                  facturasProcesadas:
+                    inputValue === "" ? 0 : Number.parseInt(inputValue),
+                });
+                calculateTotalBruto({
+                  facturasProcesadas: Number(e.target.value) || 0,
+                });
+              }}
             />
           </div>
           <div className="col-2 d-flex justify-content-start align-items-center">
@@ -78,11 +106,18 @@ function CashOpeningForm({
           <div className="col-2">
             <input
               type="number"
-              className="form-control"
+              className="form-control text-center"
               value={notasCredito}
-              onChange={(e) =>
-                updateFields({ notasCredito: Number.parseInt(e.target.value) })
-              }
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                updateFields({
+                  notasCredito:
+                    inputValue === "" ? 0 : Number.parseInt(inputValue),
+                });
+                calculateTotalBruto({
+                  notasCredito: Number(e.target.value) || 0,
+                });
+              }}
             />
           </div>
         </div>
@@ -93,11 +128,18 @@ function CashOpeningForm({
           <div className="col-2">
             <input
               type="number"
-              className="form-control"
+              className="form-control text-center"
               value={reintegros}
-              onChange={(e) =>
-                updateFields({ reintegros: Number.parseInt(e.target.value) })
-              }
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                updateFields({
+                  reintegros:
+                    inputValue === "" ? 0 : Number.parseInt(e.target.value),
+                });
+                calculateTotalBruto({
+                  reintegros: Number(e.target.value) || 0,
+                });
+              }}
             />
           </div>
           <div className="col-2 d-flex justify-content-start align-items-center">
@@ -106,12 +148,18 @@ function CashOpeningForm({
           <div className="col-2">
             <input
               type="number"
-              className="form-control"
+              className="form-control text-center"
               readOnly
-              value={totalBruto}
-              onChange={(e) =>
-                updateFields({ totalBruto: Number.parseInt(e.target.value) })
+              value={
+                apertura +
+                facturasProcesadas +
+                reintegros +
+                facturasPagadas -
+                notasCredito
               }
+              onChange={(e) => {
+                updateFields({ totalBruto: Number.parseInt(e.target.value) });
+              }}
             />
           </div>
         </div>
