@@ -1,17 +1,4 @@
-import React from "react";
 import { allData } from "../../pages/CashClosing/CashClosing";
-
-type ServicesData = {
-  serviciosBAC: number; // Servicios BAC
-  depositosBAC: number; // Depósitos BAC
-  totalBAC: number; // Total BAC
-  avanceBAC: number; // Avance BAC
-  serviciosTucan: number; // Servicios Tucan
-  depositosTucan: number; // Depósitos Tucan
-  totalTucan: number; // Total Tucan
-  avanceBCR: number; // Avance BCR
-  notas: string; // Notas
-};
 
 type ServicesProps = {
   servicesData: allData["services"];
@@ -60,16 +47,6 @@ function ServicesForm({
     const newTotalBcr = updatedDeposito! + updatedServices!;
 
     updateFields({ ...newValues, totalTucan: newTotalBcr });
-  };
-
-  const handleInputChange = (
-    value: string,
-    field: keyof ServicesProps["servicesData"]
-  ) => {
-    if (value.startsWith("0") && value.length > 1) {
-      value = value.slice(1);
-    }
-    updateFields({ [field]: value === "" ? 0 : Number(value) });
   };
 
   return (

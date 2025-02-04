@@ -86,7 +86,7 @@ function CoinsForm({
                 </td>
                 <td>
                   <label className="my-2">
-                    {denominacionesMonedas[key as keyof typeof denominacionesMonedas] * value}
+                    {denominacionesMonedas?.[key as keyof typeof denominacionesMonedas] ?? 0 * value}
                   </label>
                 </td>
               </tr>

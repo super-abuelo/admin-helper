@@ -1,4 +1,3 @@
-import React, { useEffect } from "react";
 import { allData } from "../../pages/CashClosing/CashClosing";
 
 type CashOpeningProps = {
@@ -13,7 +12,7 @@ function CashOpeningForm({ cashOpening, updateFields }: CashOpeningProps) {
     facturasProcesadas = 0,
     notasCredito = 0,
     reintegros = 0,
-    totalBruto = 0,
+    //totalBruto = 0,
   } = cashOpening;
 
   const calculateTotalBruto = (newValues: Partial<allData["cashOpening"]>) => {

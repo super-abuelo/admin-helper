@@ -1,5 +1,3 @@
-import React from "react";
-
 type BillsData = {
   denominaciones: {
     cincuentaMil?: number;
@@ -31,20 +29,17 @@ function BillsForm({
   ];
 
   const calculateTotal = (denominaciones: BillsData["denominaciones"]) => {
-    return Object.entries(denominaciones).reduce(
-      (total, [key, quantity]) => {
-        const value = {
-          cincuentaMil: 50000,
-          veinteMil: 20000,
-          diezMil: 10000,
-          cincoMil: 5000,
-          dosMil: 2000,
-          mil: 1000,
-        }[key as keyof typeof denominaciones];
-        return total + value * quantity;
-      },
-      0
-    );
+    return Object.entries(denominaciones).reduce((total, [key, quantity]) => {
+      const value = {
+        cincuentaMil: 50000,
+        veinteMil: 20000,
+        diezMil: 10000,
+        cincoMil: 5000,
+        dosMil: 2000,
+        mil: 1000,
+      }[key as keyof typeof denominaciones];
+      return total + value * quantity;
+    }, 0);
   };
 
   return (
@@ -89,12 +84,13 @@ function BillsForm({
                 </td>
                 <td>
                   <label className="my-2">
-                    {denominaciones[key as keyof typeof denominaciones] * value}
+                    {denominaciones?.[key as keyof typeof denominaciones] ??
+                      0 * value}
                   </label>
                 </td>
               </tr>
             ))}
-          </tbody>  
+          </tbody>
           {/* <tbody>
             <tr>
               <td>

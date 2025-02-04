@@ -1,7 +1,7 @@
-import { initializeApp } from "firebase/app";
+// import { initializeApp } from "firebase/app";
 
-const firebaseConfig = {
+// const firebaseConfig = {
 
-};
+// };
 
-const app = initializeApp(firebaseConfig);
+// const app = initializeApp(firebaseConfig);

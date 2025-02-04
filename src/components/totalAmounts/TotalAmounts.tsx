@@ -1,6 +1,4 @@
-import React, { useEffect } from "react";
 import { allData } from "../../pages/CashClosing/CashClosing";
-import { initialData } from "../../pages/CashClosing/CashClosing";
 
 type TotalAmountsProps = {
   totalAmounts: allData["totalAmounts"];
@@ -23,14 +21,8 @@ function TotalAmounts({
     total,
     pagoProveedores,
     retirosDeCaja,
-    diferencia,
   },
   cashOpening: {
-    apertura,
-    facturasPagadas,
-    facturasProcesadas,
-    notasCredito,
-    reintegros,
     totalBruto,
   },
   creditosTotal,

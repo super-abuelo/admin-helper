@@ -1,5 +1,3 @@
-import React from "react";
-
 function ReviewForm() {
   return (
     <div className="my-2">

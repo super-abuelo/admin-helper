@@ -1,5 +1,3 @@
-import React from 'react'
-
 function ClosingModal() {
   return (
     <div><div className="modal fade" id="exampleModal" aria-labelledby="exampleModalLabel" aria-hidden="true">

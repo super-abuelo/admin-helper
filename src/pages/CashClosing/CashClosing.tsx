@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from "react";
+import { FormEvent, useState } from "react";
 import { useMultistepForm } from "../../hooks/useMultistepForm";
 import CreditsForm from "../../components/credits/CreditsForm";
 import BillsForm from "../../components/bills/BillsForm";
@@ -7,7 +7,6 @@ import CoinsForm from "../../components/coins/CoinsForm";
 import ServicesForm from "../../components/services/ServicesForm";
 import TotalAmounts from "../../components/totalAmounts/TotalAmounts";
 import "animate.css";
-import ClosingModal from "../../components/closingModal/ClosingModal";
 
 export type allData = {
   cashOpening: {
@@ -148,8 +147,8 @@ export const CashClosing = () => {
   };
 
   const [data, setData] = useState(initialData);
-  const [animation, setAnimation] = useState<string>("animate__fadeIn");
-  const { steps, currentStepIndex, step, isFirstStep, isLastStep, back, next } =
+  //const [animation, setAnimation] = useState<string>("animate__fadeIn");
+  const { currentStepIndex, step, isFirstStep, isLastStep, back, next } =
     useMultistepForm([
       <CreditsForm {...data} updateFields={updateFields} />,
       <BillsForm {...data} updateFields={updateFields} />,

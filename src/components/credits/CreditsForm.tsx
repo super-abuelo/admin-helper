@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from "react";
+import { FormEvent } from "react";
 import "./CreditsForm.css";
 
 type CreditsData = {
