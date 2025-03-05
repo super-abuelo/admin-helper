@@ -22,9 +22,7 @@ function TotalAmounts({
     pagoProveedores,
     retirosDeCaja,
   },
-  cashOpening: {
-    totalBruto,
-  },
+  cashOpening: { totalBruto },
   creditosTotal,
   efectivoTotal,
   monedasTotal,
@@ -35,7 +33,6 @@ function TotalAmounts({
     newValues: Partial<TotalAmountsProps["totalAmounts"]>
   ) => {
     const updatedDolares = newValues.dolares ?? dolares;
-    const updatedColones = newValues.colones ?? colones;
     const updatedDatafonosBAC = newValues.datafonosBAC ?? datafonosBAC;
     const updatedDatafonosBCR = newValues.datafonosBCR ?? datafonosBCR;
     const updatedPagoProveedores = newValues.pagoProveedores ?? pagoProveedores;
@@ -45,8 +42,7 @@ function TotalAmounts({
       efectivoTotal +
       monedasTotal +
       creditosTotal +
-      updatedDolares! +
-      updatedColones! +
+      updatedDolares! * 490 +
       updatedDatafonosBAC! +
       updatedDatafonosBCR! +
       updatedPagoProveedores! +
@@ -140,22 +136,21 @@ function TotalAmounts({
                 updateFields({
                   dolares: inputValue === "" ? 0 : Number.parseInt(inputValue),
                 });
+                updateFields({
+                  colones:
+                    inputValue === "" ? 0 : Number.parseInt(inputValue) * 490,
+                });
+                calculateTotal({
+                  colones: Number(e.target.value) || 0,
+                });
               }}
             />
             <input
               type="number"
               className="form-control text-center w-50"
               placeholder="₡"
-              value={colones}
-              onChange={(e) => {
-                const inputValue = e.target.value;
-                calculateTotal({
-                  colones: Number(e.target.value) || 0,
-                });
-                updateFields({
-                  colones: inputValue === "" ? 0 : Number.parseInt(inputValue),
-                });
-              }}
+              readOnly
+              value={dolares! * 490}
             />
           </div>
           <div className="col-2 d-flex justify-content-start align-items-center">
@@ -241,7 +236,7 @@ function TotalAmounts({
               type="number"
               className="form-control text-center"
               readOnly
-              value={totalBruto! - total!}
+              value={total! - totalBruto!}
               onChange={(e) =>
                 updateFields({ diferencia: Number.parseInt(e.target.value) })
               }

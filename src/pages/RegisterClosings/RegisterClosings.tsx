@@ -1,26 +1,57 @@
-import { useState } from "react";
+import {
+  JSXElementConstructor,
+  Key,
+  ReactElement,
+  ReactNode,
+  ReactPortal,
+  useEffect,
+  useState,
+} from "react";
 import ReviewForm from "../../components/reviewForm/ReviewForm";
 import { Login } from "../Login-Sign In/Login";
+import { getAllCierresCaja } from "../../api/getFirebaseDoc";
+import { collection, getDocs } from "firebase/firestore";
+import { dataBase } from "../../api/Firebase";
 
 export const RegisterClosings = () => {
-  const [selectedRow, setSelectedRow] = useState<null | {
-    id: number;
-    name: string;
-    age: number;
-  }>(null);
+  const [selectedData, setSelectedData] = useState<any>(null);
   const [showForm, setShowForm] = useState(false);
+  const [data, setData] = useState<any>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleRowClick = (row: { id: number; name: string; age: number }) => {
-    setSelectedRow(row);
-    console.log("Fila seleccionada:", row);
+  useEffect(() => {
+    const fetchCierres = async () => {
+      try {
+        const querySnapshot = await getDocs(
+          collection(dataBase, "cierresCaja")
+        );
+
+        // Convert documents to objects
+        const cierreDocs = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        console.log("✅ Fetched cierresCaja documents:", cierreDocs);
+        setData(cierreDocs);
+      } catch (error) {
+        console.error("Error fetching cierresCaja:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCierres();
+  }, []);
+
+  const handleRowClick = (data: any) => {
+    setSelectedData(data);
+    setShowForm(true)
   };
 
   const handleBack = () => {
-    if (showForm) {
-      setShowForm(false);
-    } else {
-      setSelectedRow(null);
-    }
+    setShowForm(false);
+    setSelectedData(null);
   };
 
   const handleShowForm = () => {
@@ -29,23 +60,62 @@ export const RegisterClosings = () => {
 
   return (
     <div>
-      <Login></Login>
       <h1 className="my-3">Cierres de Caja Realizados</h1>
-      {!selectedRow && !showForm && (
+      {!showForm && (
         <div className="d-flex justify-content-center">
-          <table className="table table-striped table-bordered w-75">
+          <table className="table table-striped table-bordered w-75 shadow">
             <thead>
               <tr>
                 <th>Fecha</th>
-                <th>Retiros Adicionales</th>
-                <th>Efectivo</th>
-                <th>Dólares</th>
-                <th>RapiBAC</th>
-                <th>Tucan</th>
+                <th>Súper</th>
+                <th>Caja</th>
+                <th>Usuario</th>
                 <th>Ver Más</th>
               </tr>
             </thead>
             <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan={9} className="text-center">
+                    Cargando datos...
+                  </td>
+                </tr>
+              ) : data.length > 0 ? (
+                data.map((cierre: any) => (
+                  <tr key={cierre.id}>
+                    <td>
+                      {cierre.fecha?.toDate
+                        ? cierre.fecha.toDate().toLocaleDateString("es-CR")
+                        : cierre.fecha || "N/A"}
+                    </td>
+                    <td>{cierre.super}</td>
+                    <td>{cierre.caja ?? "N/A"}</td>
+                    <td>{cierre.usuario?.toString() || "N/A" }</td>
+                    <td>
+                      <button
+                        className="btn btn-primary"
+                        onClick={() => {
+                          handleRowClick(cierre)
+                          
+                          handleShowForm()
+                        }}
+                      >
+                        +
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={9} className="text-center text-danger">
+                    ⚠️ No hay datos disponibles.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+
+            {/* <tbody>
+
               <tr>
                 <td>-</td>
                 <td>-</td>
@@ -64,13 +134,13 @@ export const RegisterClosings = () => {
                   </button>
                 </td>
               </tr>
-            </tbody>
+            </tbody> */}
           </table>
         </div>
       )}
 
       {/* Tabla Secundaria */}
-      {selectedRow && !showForm && (
+      {/* {selectedData && !showForm && (
         <div>
           <h4 className="my-2">Detalles de la fila seleccionada</h4>
           <div className="d-flex justify-content-center">
@@ -86,9 +156,9 @@ export const RegisterClosings = () => {
               </thead>
               <tbody>
                 <tr>
-                  <td>{selectedRow.id}</td>
-                  <td>{selectedRow.name}</td>
-                  <td>{selectedRow.age}</td>
+                  <td>{selectedData.id}</td>
+                  <td>{selectedData.name}</td>
+                  <td>{selectedData.age}</td>
                   <td>Detalles adicionales</td>
                   <td>
                     <button
@@ -107,10 +177,10 @@ export const RegisterClosings = () => {
             Volver
           </button>
         </div>
-      )}
+      )} */}
       {showForm && (
         <div>
-          <ReviewForm />
+          <ReviewForm closingData={selectedData} cierreId = {selectedData.id} />
           <div className="my-3">
             <button type="submit" className="btn btn-primary">
               Guardar

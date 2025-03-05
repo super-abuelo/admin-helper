@@ -7,6 +7,13 @@ import CoinsForm from "../../components/coins/CoinsForm";
 import ServicesForm from "../../components/services/ServicesForm";
 import TotalAmounts from "../../components/totalAmounts/TotalAmounts";
 import "animate.css";
+import { addTotalAmounts, addParentDocument } from "../../api/addFirebaseDoc";
+import { getCierreCaja, getDocument } from "../../api/getFirebaseDoc";
+
+const getFormattedDate = (): string => {
+  const today = new Date();
+  return today.toLocaleDateString("es-CR"); // "es-CR" ensures dd/MM/yyyy format
+};
 
 export type allData = {
   cashOpening: {
@@ -59,6 +66,10 @@ export type allData = {
     name: string; // Name of the credit
     amount: number; // Amount of the credit
   }[];
+  fecha: string;
+  super: number;
+  usuario: string;
+  caja: number;
   efectivoTotal: number;
   monedasTotal: number;
   creditosTotal: number;
@@ -109,10 +120,14 @@ export const initialData: allData = {
     diez: 0,
     cinco: 0,
   },
-  creditosData: [{ id: 1, name: "", amount: 0 }],
+  creditosData: [],
   efectivoTotal: 0,
   monedasTotal: 0,
   creditosTotal: 0,
+  fecha: getFormattedDate(),
+  super: 2,
+  usuario: "yo",
+  caja: 1,
 };
 
 export const CashClosing = () => {
@@ -177,14 +192,14 @@ export const CashClosing = () => {
     e.preventDefault();
     if (!isLastStep) {
       if (currentStepIndex == 2) {
-        alert("Creditos cerrando...")
+        //alert("Creditos cerrando...");
+        console.log("creditos cerrando...");
       }
       return next();
     } else {
       // const closingModal = ClosingModal();
       // closingModal.show()
     }
-
   }
   return (
     <div>
@@ -208,10 +223,29 @@ export const CashClosing = () => {
             </button>
           )}
           {
-            <button type="submit" className="btn btn-light shadow">
+            <button
+              type="submit"
+              className="btn btn-light shadow"
+              onClick={() => {
+                if (isLastStep) {
+                  addParentDocument("cierresCaja", data);
+                }
+              }}
+            >
               {isLastStep ? "Finalizar" : "Siguiente"}
             </button>
           }
+          <button
+          type="button"
+          className="btn btn-light shadow"
+            onClick={() => {
+              
+              console.log(data);
+              
+            }}
+          >
+            aaa
+          </button>
         </div>
       </form>
     </div>

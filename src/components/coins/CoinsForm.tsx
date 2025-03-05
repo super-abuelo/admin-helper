@@ -1,4 +1,3 @@
-
 type CoinsData = {
   denominacionesMonedas: {
     quinientos?: number;
@@ -20,7 +19,6 @@ function CoinsForm({
   monedasTotal,
   updateFields,
 }: CoinsProps) {
-  
   const denominations = [
     { key: "quinientos", value: 500, label: "500" },
     { key: "cien", value: 100, label: "100" },
@@ -30,7 +28,9 @@ function CoinsForm({
     { key: "cinco", value: 5, label: "5" },
   ];
 
-  const calculateTotal = (denominaciones: CoinsData["denominacionesMonedas"]) => {
+  const calculateTotal = (
+    denominaciones: CoinsData["denominacionesMonedas"]
+  ) => {
     return Object.entries(denominaciones).reduce((total, [key, quantity]) => {
       const value = {
         quinientos: 500,
@@ -66,7 +66,11 @@ function CoinsForm({
                   <input
                     type="number"
                     className="form-control border-0 text-center"
-                    value={denominacionesMonedas[key as keyof typeof denominacionesMonedas]}
+                    value={
+                      denominacionesMonedas[
+                        key as keyof typeof denominacionesMonedas
+                      ]
+                    }
                     placeholder="-"
                     onChange={(e) => {
                       const quantity = Number(e.target.value) || 0;
@@ -86,7 +90,10 @@ function CoinsForm({
                 </td>
                 <td>
                   <label className="my-2">
-                    {denominacionesMonedas?.[key as keyof typeof denominacionesMonedas] ?? 0 * value}
+                    {denominacionesMonedas[key as keyof typeof denominacionesMonedas]
+                      ? denominacionesMonedas[key as keyof typeof denominacionesMonedas]! *
+                        value
+                      : 0}
                   </label>
                 </td>
               </tr>
@@ -101,4 +108,4 @@ function CoinsForm({
   );
 }
 
-export default CoinsForm
+export default CoinsForm;
