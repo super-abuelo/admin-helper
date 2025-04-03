@@ -34,16 +34,9 @@ export const RegisterClosings = () => {
           const fecha = doc.data().fecha; // Obtienes la fecha del documento
           return {
             id: doc.id,
-            fecha: fecha
-              ? fecha.toDate
-                ? fecha.toDate()
-                : new Date(fecha)
-              : new Date(), // Convierte a Date si no es undefined
             ...doc.data(),
           };
         });
-
-
 
         console.log("✅ Fetched cierresCaja documents:", cierreDocs);
         setData(cierreDocs);
@@ -105,9 +98,7 @@ export const RegisterClosings = () => {
                 currentItems.map((cierre: any) => (
                   <tr key={cierre.id}>
                     <td>
-                      {cierre.fecha?.toDate
-                        ? cierre.fecha.toDate().toLocaleDateString("es-CR")
-                        : cierre.fecha || "N/A"}
+                      {cierre.fecha}
                     </td>
                     <td>{cierre.superMercado}</td>
                     <td>{cierre.caja ?? "N/A"}</td>
