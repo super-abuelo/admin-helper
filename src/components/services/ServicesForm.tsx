@@ -25,6 +25,7 @@ function ServicesForm({
   },
   totalAmounts: { total },
   cashOpening: { totalBruto },
+  totalAmounts: {diferencia},
   updateFields,
 }: ServicesProps) {
   const calculateDifferenceBac = (
@@ -221,7 +222,7 @@ function ServicesForm({
             <label> Total: {total}</label>
           </div>
           <div className="col-2">
-            <label> Diferencia: {totalBruto! - total!}</label>
+            <label> Diferencia: {diferencia}</label>
           </div>
         </div>
       </div>

@@ -32,25 +32,36 @@ function TotalAmounts({
   const calculateTotal = (
     newValues: Partial<TotalAmountsProps["totalAmounts"]>
   ) => {
-    const updatedDolares = newValues.dolares ?? dolares;
-    const updatedDatafonosBAC = newValues.datafonosBAC ?? datafonosBAC;
-    const updatedDatafonosBCR = newValues.datafonosBCR ?? datafonosBCR;
-    const updatedPagoProveedores = newValues.pagoProveedores ?? pagoProveedores;
-    const updatedRetirosDeCaja = newValues.retirosDeCaja ?? retirosDeCaja;
+    // Ensure updated values are used if provided
+    const updatedColones = newValues.colones ?? colones ?? 0; // We only sum colones, not dólares
+    const updatedDatafonosBAC = newValues.datafonosBAC ?? datafonosBAC ?? 0;
+    const updatedDatafonosBCR = newValues.datafonosBCR ?? datafonosBCR ?? 0;
+    const updatedPagoProveedores =
+      newValues.pagoProveedores ?? pagoProveedores ?? 0;
+    const updatedRetirosDeCaja = newValues.retirosDeCaja ?? retirosDeCaja ?? 0;
 
+    // Calculate new total (only adding colones, not dólares)
     const newTotal =
       efectivoTotal +
       monedasTotal +
       creditosTotal +
-      updatedDolares! * 490 +
-      updatedDatafonosBAC! +
-      updatedDatafonosBCR! +
-      updatedPagoProveedores! +
-      updatedRetirosDeCaja!;
+      updatedColones + // ✅ Use colones (which was calculated from dólares)
+      updatedDatafonosBAC +
+      updatedDatafonosBCR +
+      updatedPagoProveedores +
+      updatedRetirosDeCaja;
 
-    updateFields({ ...newValues, total: newTotal });
-    updateFields({ diferencia: totalBruto! - total! });
+    // Calculate diferencia after total is updated
+    const newDiferencia = newTotal - (totalBruto ?? 0);
+
+    // Update all at once to prevent async state issues
+    updateFields({
+      ...newValues,
+      total: newTotal,
+      diferencia: newDiferencia,
+    });
   };
+
   return (
     <div>
       <h1 className="my-4">2 / 3</h1>
@@ -132,17 +143,19 @@ function TotalAmounts({
               placeholder="$"
               value={dolares}
               onChange={(e) => {
-                const inputValue = e.target.value;
+                const inputValue =
+                  e.target.value === "" ? 0 : Number.parseInt(e.target.value);
+                // Calculate colones based on updated dólares
+                const convertedColones = inputValue * 490;
+
+                // Update both dólares and colones
                 updateFields({
-                  dolares: inputValue === "" ? 0 : Number.parseInt(inputValue),
+                  dolares: inputValue,
+                  colones: convertedColones,
                 });
-                updateFields({
-                  colones:
-                    inputValue === "" ? 0 : Number.parseInt(inputValue) * 490,
-                });
-                calculateTotal({
-                  colones: Number(e.target.value) || 0,
-                });
+
+                // Recalculate total with the new colones value
+                calculateTotal({ colones: convertedColones });
               }}
             />
             <input
@@ -150,7 +163,7 @@ function TotalAmounts({
               className="form-control text-center w-50"
               placeholder="₡"
               readOnly
-              value={dolares! * 490}
+              value={colones}
             />
           </div>
           <div className="col-2 d-flex justify-content-start align-items-center">
@@ -237,9 +250,9 @@ function TotalAmounts({
               className="form-control text-center"
               readOnly
               value={total! - totalBruto!}
-              onChange={(e) =>
-                updateFields({ diferencia: Number.parseInt(e.target.value) })
-              }
+              onChange={(e) => {
+                updateFields({ diferencia: Number.parseInt(e.target.value) });
+              }}
             />
           </div>
         </div>

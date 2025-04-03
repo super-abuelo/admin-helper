@@ -13,8 +13,8 @@ export async function addParentDocument(collectionPath: string, data: any) {
       efectivoTotal: data.efectivoTotal,
       monedasTotal: data.monedasTotal,
       creditosTotal: data.creditosTotal,
-      fecha: data.fecha,
-      super: data.super,
+      fecha: new Date(data.fecha).toISOString().split('T')[0],
+      superMercado: data.superMercadoD,
       usuario: data.usuario,
       caja: data.caja,
     };

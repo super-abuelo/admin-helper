@@ -8,9 +8,7 @@ import {
   useState,
 } from "react";
 import ReviewForm from "../../components/reviewForm/ReviewForm";
-import { Login } from "../Login-Sign In/Login";
-import { getAllCierresCaja } from "../../api/getFirebaseDoc";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { dataBase } from "../../api/Firebase";
 
 export const RegisterClosings = () => {
@@ -18,19 +16,34 @@ export const RegisterClosings = () => {
   const [showForm, setShowForm] = useState(false);
   const [data, setData] = useState<any>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1); // State for current page
+  const [itemsPerPage] = useState(8);
 
   useEffect(() => {
     const fetchCierres = async () => {
       try {
-        const querySnapshot = await getDocs(
-          collection(dataBase, "cierresCaja")
-        );
+        const collectionRef = collection(dataBase, "cierresCaja");
+
+        // Create a query to order by the 'fecha' field in descending order (most recent first)
+        const q = query(collectionRef, orderBy("fecha", "desc"));
+
+        const querySnapshot = await getDocs(q);
 
         // Convert documents to objects
-        const cierreDocs = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+        const cierreDocs = querySnapshot.docs.map((doc) => {
+          const fecha = doc.data().fecha; // Obtienes la fecha del documento
+          return {
+            id: doc.id,
+            fecha: fecha
+              ? fecha.toDate
+                ? fecha.toDate()
+                : new Date(fecha)
+              : new Date(), // Convierte a Date si no es undefined
+            ...doc.data(),
+          };
+        });
+
+
 
         console.log("✅ Fetched cierresCaja documents:", cierreDocs);
         setData(cierreDocs);
@@ -46,7 +59,7 @@ export const RegisterClosings = () => {
 
   const handleRowClick = (data: any) => {
     setSelectedData(data);
-    setShowForm(true)
+    setShowForm(true);
   };
 
   const handleBack = () => {
@@ -57,6 +70,14 @@ export const RegisterClosings = () => {
   const handleShowForm = () => {
     setShowForm(true);
   };
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
     <div>
@@ -80,24 +101,24 @@ export const RegisterClosings = () => {
                     Cargando datos...
                   </td>
                 </tr>
-              ) : data.length > 0 ? (
-                data.map((cierre: any) => (
+              ) : currentItems.length > 0 ? (
+                currentItems.map((cierre: any) => (
                   <tr key={cierre.id}>
                     <td>
                       {cierre.fecha?.toDate
                         ? cierre.fecha.toDate().toLocaleDateString("es-CR")
                         : cierre.fecha || "N/A"}
                     </td>
-                    <td>{cierre.super}</td>
+                    <td>{cierre.superMercado}</td>
                     <td>{cierre.caja ?? "N/A"}</td>
-                    <td>{cierre.usuario?.toString() || "N/A" }</td>
+                    <td>{cierre.usuario?.toString() || "N/A"}</td>
                     <td>
                       <button
                         className="btn btn-primary"
                         onClick={() => {
-                          handleRowClick(cierre)
-                          
-                          handleShowForm()
+                          handleRowClick(cierre);
+
+                          handleShowForm();
                         }}
                       >
                         +
@@ -113,74 +134,61 @@ export const RegisterClosings = () => {
                 </tr>
               )}
             </tbody>
-
-            {/* <tbody>
-
-              <tr>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>
-                  <button
-                    className="btn btn-primary"
-                    onClick={() =>
-                      handleRowClick({ id: 1, name: "Nombre 1", age: 30 })
-                    }
-                  >
-                    +
-                  </button>
-                </td>
-              </tr>
-            </tbody> */}
           </table>
         </div>
       )}
+      <div className="d-flex justify-content-center align-items-center">
+        <nav aria-label="Page navigation">
+          <ul className="pagination">
+            <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+              <button
+                className="page-link"
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                Anterior
+              </button>
+            </li>
 
-      {/* Tabla Secundaria */}
-      {/* {selectedData && !showForm && (
-        <div>
-          <h4 className="my-2">Detalles de la fila seleccionada</h4>
-          <div className="d-flex justify-content-center">
-            <table className="table table-striped table-bordered w-75">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Nombre</th>
-                  <th>Edad</th>
-                  <th>Detalles</th>
-                  <th>Acción</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>{selectedData.id}</td>
-                  <td>{selectedData.name}</td>
-                  <td>{selectedData.age}</td>
-                  <td>Detalles adicionales</td>
-                  <td>
-                    <button
-                      className="btn btn-secondary"
-                      onClick={handleShowForm}
-                    >
-                      Ver Formulario
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+            {[...Array(Math.ceil(data.length / itemsPerPage))].map(
+              (_, index) => (
+                <li
+                  key={index + 1}
+                  className={`page-item ${
+                    index + 1 === currentPage ? "active" : ""
+                  }`}
+                >
+                  <button
+                    className="page-link"
+                    onClick={() => handlePageChange(index + 1)}
+                  >
+                    {index + 1}
+                  </button>
+                </li>
+              )
+            )}
 
-          <button className="btn btn-secondary mt-2" onClick={handleBack}>
-            Volver
-          </button>
-        </div>
-      )} */}
+            <li
+              className={`page-item ${
+                currentPage === Math.ceil(data.length / itemsPerPage)
+                  ? "disabled"
+                  : ""
+              }`}
+            >
+              <button
+                className="page-link"
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === Math.ceil(data.length / itemsPerPage)}
+              >
+                Siguiente
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </div>
       {showForm && (
         <div>
-          <ReviewForm closingData={selectedData} cierreId = {selectedData.id} />
+          <ReviewForm closingData={selectedData} cierreId={selectedData.id} />
           <div className="my-3">
             <button type="submit" className="btn btn-primary">
               Guardar

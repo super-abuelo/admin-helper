@@ -1,21 +1,23 @@
 import { useState } from "react";
 import SignIn from "./SignIn";
 import "./Login.css";
-import LoginForm from "./LoginForm";
-import { fetchUsers, testFirestoreWrite } from "../../api/Firebase";
+import LoginForm from "./LoginForm";  
+import { User } from "../../App";
 
-export const Login = () => {
+interface Props {
+  user: User,
+  setUser: (user: User | null) => void;
+}
+
+export const Login = ({user, setUser}: Props) => {
   const [showForm, setShowForm] = useState(false);
 
-  //testFirestoreWrite();
-  fetchUsers();
-
   return (
-    <div className="form-container">
+    <div>
       {showForm ? (
         <SignIn setShowForm={setShowForm} />
       ) : (
-        <LoginForm setShowForm={setShowForm} />
+        <LoginForm setShowForm={setShowForm} user={user} setUser={setUser}/>
       )}
     </div>
   );

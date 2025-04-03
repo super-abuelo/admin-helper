@@ -30,6 +30,43 @@ function ReviewForm({
     fetchData(); // Call the async function inside useEffect
   }, [cierreId]);
 
+  const recalculateTotals = (updatedData: any) => {
+    const { cashOpening, totalAmounts } = updatedData;
+  
+    const totalBruto =
+      (cashOpening.apertura || 0) +
+      (cashOpening.facturasProcesadas || 0) +
+      (cashOpening.reintegros || 0) +
+      (cashOpening.facturasPagadas || 0) -
+      (cashOpening.notasCredito || 0);
+  
+    const total =
+      (totalAmounts.efectivoTotal || 0) +
+      (totalAmounts.monedasTotal || 0) +
+      (totalAmounts.colones || 0) +
+      (totalAmounts.datafonosBAC || 0) +
+      (totalAmounts.datafonosBCR || 0) +
+      (totalAmounts.pagoProveedores || 0) + 
+      (data.creditosTotal || 0) + 
+      (totalAmounts.retirosDeCaja || 0);
+  
+    const diferencia = total - totalBruto;
+  
+    return {
+      ...updatedData,
+      cashOpening: {
+        ...updatedData.cashOpening,
+        totalBruto,
+      },
+      totalAmounts: {
+        ...updatedData.totalAmounts,
+        total,
+        diferencia,
+      },
+    };
+  };
+  
+
   return (
     <div className="my-2">
       {loading ? (
@@ -51,6 +88,10 @@ function ReviewForm({
             >
               Editar
             </button>
+            <button onClick={() => {
+              console.log(data);
+              
+            }}> aaa</button>
           </div>
           <div className="container">
             <div className="row my-2 justify-content-center">
@@ -68,6 +109,18 @@ function ReviewForm({
                   className="form-control text-center"
                   readOnly={!isEditing}
                   value={data.cashOpening.apertura}
+                  onChange={(e) => {
+                    if (isEditing) {
+                      const newValue = Number(e.target.value);
+                      setData((prevData: any) => recalculateTotals({
+                        ...prevData,
+                        cashOpening: {
+                          ...prevData.cashOpening,
+                          apertura: newValue,
+                        },
+                      }));
+                    }
+                  }}
                 />
               </div>
               <div className="col-2 d-flex justify-content-start align-items-center">
@@ -79,6 +132,7 @@ function ReviewForm({
                   className="form-control text-center"
                   readOnly={!isEditing}
                   value={data.creditosTotal}
+                  //hacer lo del boton y tabla
                 />
               </div>
             </div>
@@ -92,6 +146,18 @@ function ReviewForm({
                   className="form-control text-center"
                   readOnly={!isEditing}
                   value={data.cashOpening.facturasProcesadas}
+                  onChange={(e) => {
+                    if (isEditing) {
+                      const newValue = Number(e.target.value);
+                      setData((prevData: any) => recalculateTotals({
+                        ...prevData,
+                        cashOpening: {
+                          ...prevData.cashOpening,
+                          facturasProcesadas: newValue,
+                        },
+                      }));
+                    }
+                  }}
                 />
               </div>
               <div className="col-2 d-flex justify-content-start align-items-center">
@@ -103,6 +169,18 @@ function ReviewForm({
                   className="form-control text-center"
                   readOnly={!isEditing}
                   value={data.totalAmounts.retirosDeCaja}
+                  // onChange={(e) => {
+                  //   if (isEditing) {
+                  //     const newValue = Number(e.target.value);
+                  //     setData((prevData: any) => recalculateTotals({
+                  //       ...prevData,
+                  //       cashOpening: {
+                  //         ...prevData.cashOpening,
+                  //         apertura: newValue,
+                  //       },
+                  //     }));
+                  //   }
+                  // }}
                 />
               </div>
             </div>
@@ -116,6 +194,18 @@ function ReviewForm({
                   className="form-control text-center"
                   readOnly={!isEditing}
                   value={data.cashOpening.reintegros}
+                  onChange={(e) => {
+                    if (isEditing) {
+                      const newValue = Number(e.target.value);
+                      setData((prevData: any) => recalculateTotals({
+                        ...prevData,
+                        cashOpening: {
+                          ...prevData.cashOpening,
+                          reintegros: newValue,
+                        },
+                      }));
+                    }
+                  }}
                 />
               </div>
               <div className="col-2 d-flex justify-content-start align-items-center">
@@ -140,10 +230,22 @@ function ReviewForm({
                   className="form-control text-center"
                   readOnly={!isEditing}
                   value={data.cashOpening.facturasPagadas}
+                  onChange={(e) => {
+                    if (isEditing) {
+                      const newValue = Number(e.target.value);
+                      setData((prevData: any) => recalculateTotals({
+                        ...prevData,
+                        cashOpening: {
+                          ...prevData.cashOpening,
+                          facturasPagadas: newValue,
+                        },
+                      }));
+                    }
+                  }}
                 />
               </div>
               <div className="col-2 d-flex justify-content-start align-items-center">
-                <label>Diferencia:</label>
+                <label className="fw-semibold">Diferencia:</label>
               </div>
               <div className="col-2">
                 <input
@@ -164,6 +266,18 @@ function ReviewForm({
                   className="form-control text-center"
                   readOnly={!isEditing}
                   value={data.cashOpening.notasCredito}
+                  onChange={(e) => {
+                    if (isEditing) {
+                      const newValue = Number(e.target.value);
+                      setData((prevData: any) => recalculateTotals({
+                        ...prevData,
+                        cashOpening: {
+                          ...prevData.cashOpening,
+                          notasCredito: newValue,
+                        },
+                      }));
+                    }
+                  }}
                 />
               </div>
               <div className="col-2 d-flex justify-content-start align-items-center">
@@ -186,7 +300,7 @@ function ReviewForm({
                 <input
                   type="number"
                   className="form-control text-center"
-                  readOnly={!isEditing}
+                  readOnly
                   value={data.cashOpening.totalBruto}
                 />
               </div>
@@ -290,6 +404,18 @@ function ReviewForm({
                   className="form-control text-center"
                   readOnly={!isEditing}
                   value={data.totalAmounts.datafonosBAC}
+                  // onChange={(e) => {
+                  //   if (isEditing) {
+                  //     const newValue = Number(e.target.value);
+                  //     setData((prevData: any) => recalculateTotals({
+                  //       ...prevData,
+                  //       cashOpening: {
+                  //         ...prevData.cashOpening,
+                  //         apertura: newValue,
+                  //       },
+                  //     }));
+                  //   }
+                  // }}
                 />
               </div>
               <div className="col-2 d-flex justify-content-start align-items-center">
@@ -300,7 +426,6 @@ function ReviewForm({
                   type="number"
                   className="form-control text-center"
                   readOnly={!isEditing}
-                  
                   value={data.services.depositosTucan}
                 />
               </div>
@@ -314,7 +439,6 @@ function ReviewForm({
                   type="number"
                   className="form-control text-center"
                   readOnly={!isEditing}
-                  
                   value={data.totalAmounts.datafonosBCR}
                 />
               </div>
@@ -326,7 +450,6 @@ function ReviewForm({
                   type="number"
                   className="form-control text-center"
                   readOnly={!isEditing}
-                  
                   value={data.services.totalTucan}
                 />
               </div>

@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useMultistepForm } from "../../hooks/useMultistepForm";
 import CreditsForm from "../../components/credits/CreditsForm";
 import BillsForm from "../../components/bills/BillsForm";
@@ -7,8 +7,11 @@ import CoinsForm from "../../components/coins/CoinsForm";
 import ServicesForm from "../../components/services/ServicesForm";
 import TotalAmounts from "../../components/totalAmounts/TotalAmounts";
 import "animate.css";
-import { addTotalAmounts, addParentDocument } from "../../api/addFirebaseDoc";
-import { getCierreCaja, getDocument } from "../../api/getFirebaseDoc";
+import { addParentDocument } from "../../api/addFirebaseDoc";
+import SuperMarketSelect from "../../components/superMarketSelect/SuperMarketSelect";
+import ClosingModal from "../../components/closingModal/ClosingModal";
+import { Navigate, useNavigate } from "react-router-dom";
+import { User } from "../../App";
 
 const getFormattedDate = (): string => {
   const today = new Date();
@@ -67,7 +70,7 @@ export type allData = {
     amount: number; // Amount of the credit
   }[];
   fecha: string;
-  super: number;
+  superMercado: number;
   usuario: string;
   caja: number;
   efectivoTotal: number;
@@ -125,12 +128,20 @@ export const initialData: allData = {
   monedasTotal: 0,
   creditosTotal: 0,
   fecha: getFormattedDate(),
-  super: 2,
-  usuario: "yo",
-  caja: 1,
+  superMercado: 0,
+  usuario: "",
+  caja: 0,
 };
-
-export const CashClosing = () => {
+interface Props {
+  user: User;
+}
+export const CashClosing = ({ user }: Props) => {
+  // const navigate = useNavigate();
+  // useEffect(() => {
+  //   if (user.username == null) {
+  //     navigate("/");
+  //   }
+  // }, [user, navigate]);
   const updateFields = (fields: Partial<allData>) => {
     setData((prev) => ({
       ...prev,
@@ -158,13 +169,22 @@ export const CashClosing = () => {
       efectivoTotal: fields.efectivoTotal ?? prev.efectivoTotal,
       monedasTotal: fields.monedasTotal ?? prev.monedasTotal,
       creditosTotal: fields.creditosTotal ?? prev.creditosTotal,
+      superMercado: fields.superMercado ?? prev.superMercado,
+      caja: fields.caja ?? prev.caja,
     }));
   };
 
   const [data, setData] = useState(initialData);
   //const [animation, setAnimation] = useState<string>("animate__fadeIn");
-  const { currentStepIndex, step, isFirstStep, isLastStep, back, next } =
+  const { currentStepIndex, step, isFirstStep, isLastStep, back, next, goTo } =
     useMultistepForm([
+      <SuperMarketSelect
+        usuario={(data.usuario = user.username)}
+        fecha={data.fecha}
+        superMercado={data.superMercado}
+        caja={data.caja}
+        updateFields={updateFields}
+      />,
       <CreditsForm {...data} updateFields={updateFields} />,
       <BillsForm {...data} updateFields={updateFields} />,
       <CoinsForm {...data} updateFields={updateFields} />,
@@ -187,20 +207,57 @@ export const CashClosing = () => {
         updateFields={(fields) => updateFields({ services: { ...fields } })}
       />,
     ]);
-
   function onSubmit(e: FormEvent) {
     e.preventDefault();
+    // if (!data.superMercado || "1" || "2") {
+    //   alert("Por favor seleccione un Supermercado");
+    //   return; // Exit the function if validation fails
+    // }
+    // if (!data.caja || "1" || "2") {
+    //   alert("Por favor seleccione una Caja");
+    //   return; // Exit the function if validation fails
+    // }
     if (!isLastStep) {
-      if (currentStepIndex == 2) {
-        //alert("Creditos cerrando...");
-        console.log("creditos cerrando...");
+      if (currentStepIndex == 3) {
+        const confirmed = window.confirm(
+          "¿Desea continuar? Una vez terminada esta parte no podrá modificar esta información."
+        );
+        if (!confirmed) return;
       }
-      return next();
+      next();
     } else {
-      // const closingModal = ClosingModal();
-      // closingModal.show()
+      const confirmacion = window.confirm(
+        "¿Desea finalizar? Una vez enviado no podrá modificar la información."
+      );
+      if (confirmacion) {
+        addParentDocument("cierresCaja", data);
+        setData(initialData);
+        goTo(0);
+      }
     }
   }
+  /*function onSubmit(e: FormEvent) {
+    e.preventDefault();
+    if (!isLastStep) {
+      if (currentStepIndex == 3) {
+        const confirmed = window.confirm(
+          "¿Desea continuar? Una vez terminada esta parte no podrá modificar esta información."
+        );
+        if (!confirmed) return; // El usuario canceló
+      }
+      next();
+    }
+  }}
+    } else {
+      const confirmacion = window.confirm(
+        "¿Estás seguro de finalizar? Una vez enviado no podrás modificar la información."
+      );
+      if (confirmacion) {
+       // addParentDocument("cierresCaja", data);
+        setData(initialData);
+        navigate("/cierrecaja");
+      }
+    }*/
   return (
     <div>
       <form onSubmit={onSubmit}>
@@ -213,7 +270,7 @@ export const CashClosing = () => {
             justifySelf: "center",
           }}
         >
-          {!isFirstStep && (
+          {!isFirstStep && currentStepIndex !== 4 && (
             <button
               type="button"
               onClick={back}
@@ -223,25 +280,15 @@ export const CashClosing = () => {
             </button>
           )}
           {
-            <button
-              type="submit"
-              className="btn btn-light shadow"
-              onClick={() => {
-                if (isLastStep) {
-                  addParentDocument("cierresCaja", data);
-                }
-              }}
-            >
+            <button type="submit" className="btn btn-light shadow">
               {isLastStep ? "Finalizar" : "Siguiente"}
             </button>
           }
           <button
-          type="button"
-          className="btn btn-light shadow"
+            type="button"
+            className="btn btn-light shadow"
             onClick={() => {
-              
               console.log(data);
-              
             }}
           >
             aaa
