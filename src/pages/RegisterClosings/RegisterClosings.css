@@ -1,0 +1,9 @@
+.reviewContainer {
+  min-height: 100vh; /* This will make it at least 100% of the viewport height */
+  display: flex;
+  flex-direction: column;
+}
+
+.review-container .content {
+  flex-grow: 1; /* This will make sure the content takes the available space */
+}
