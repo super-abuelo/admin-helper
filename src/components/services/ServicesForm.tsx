@@ -7,10 +7,6 @@ type ServicesProps = {
   updateFields: (fields: Partial<allData["services"]>) => void;
 };
 
-// type ServicesProps = ServicesData & {
-//   updateFields: (fields: Partial<ServicesData>) => void;
-// };
-
 function ServicesForm({
   servicesData: {
     serviciosBAC,

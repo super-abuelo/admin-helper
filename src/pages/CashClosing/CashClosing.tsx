@@ -6,7 +6,6 @@ import CashOpeningForm from "../../components/cashOpening/CashOpeningForm";
 import CoinsForm from "../../components/coins/CoinsForm";
 import ServicesForm from "../../components/services/ServicesForm";
 import TotalAmounts from "../../components/totalAmounts/TotalAmounts";
-import "animate.css";
 import { addParentDocument } from "../../api/addFirebaseDoc";
 import SuperMarketSelect from "../../components/superMarketSelect/SuperMarketSelect";
 import { User } from "../../App";
@@ -136,12 +135,6 @@ interface Props {
   user: User | null;
 }
 export const CashClosing = ({ user }: Props) => {
-  // const navigate = useNavigate();
-  // useEffect(() => {
-  //   if (user.username == null) {
-  //     navigate("/");
-  //   }
-  // }, [user, navigate]);
   const updateFields = (fields: Partial<allData>) => {
     setData((prev) => ({
       ...prev,
@@ -226,14 +219,6 @@ export const CashClosing = ({ user }: Props) => {
     ]);
   function onSubmit(e: FormEvent) {
     e.preventDefault();
-    // if (!data.superMercado || "1" || "2") {
-    //   alert("Por favor seleccione un Supermercado");
-    //   return; // Exit the function if validation fails
-    // }
-    // if (!data.caja || "1" || "2") {
-    //   alert("Por favor seleccione una Caja");
-    //   return; // Exit the function if validation fails
-    // }
     if (!isLastStep) {
       if (currentStepIndex == 3) {
         const confirmed = window.confirm(
@@ -262,28 +247,7 @@ export const CashClosing = ({ user }: Props) => {
       }
     }
   }
-  /*function onSubmit(e: FormEvent) {
-    e.preventDefault();
-    if (!isLastStep) {
-      if (currentStepIndex == 3) {
-        const confirmed = window.confirm(
-          "¿Desea continuar? Una vez terminada esta parte no podrá modificar esta información."
-        );
-        if (!confirmed) return; // El usuario canceló
-      }
-      next();
-    }
-  }}
-    } else {
-      const confirmacion = window.confirm(
-        "¿Estás seguro de finalizar? Una vez enviado no podrás modificar la información."
-      );
-      if (confirmacion) {
-       // addParentDocument("cierresCaja", data);
-        setData(initialData);
-        navigate("/cierrecaja");
-      }
-    }*/
+
   return (
     <div>
       <Toast

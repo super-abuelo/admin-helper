@@ -1,7 +1,6 @@
 import { ReactNode } from "react";
 import { NavBar } from "../navbar/NavBar";
 import "./Layout.css";
-import { useLocation } from "react-router-dom";
 import { User } from "../../App";
 
 interface LayoutProps {

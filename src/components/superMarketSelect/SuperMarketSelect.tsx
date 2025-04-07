@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { allData } from "../../pages/CashClosing/CashClosing";
 
 type marketSelectProps = {
@@ -14,8 +14,6 @@ type marketSelectProps = {
 function SuperMarketSelect({
   usuario,
   fecha,
-  superMercado,
-  caja,
   updateFields,
 }: marketSelectProps) {
   const [selectedSuper, setSelectedSuper] = useState("");

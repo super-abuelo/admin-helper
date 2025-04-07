@@ -45,7 +45,6 @@ export const NavBar = ({
             >
               Cerrar Sesión
             </NavLink>
-            {/* <NavLink to={"/home"}></NavLink> */}
           </div>
         </div>
       </nav>

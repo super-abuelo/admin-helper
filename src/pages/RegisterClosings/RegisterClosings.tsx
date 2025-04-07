@@ -1,20 +1,10 @@
-import {
-  JSXElementConstructor,
-  Key,
-  ReactElement,
-  ReactNode,
-  ReactPortal,
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
 import ReviewForm from "../../components/reviewForm/ReviewForm";
 import {
   collection,
-  doc,
   getDocs,
   orderBy,
   query,
-  updateDoc,
 } from "firebase/firestore";
 import { dataBase } from "../../api/Firebase";
 
@@ -38,7 +28,6 @@ export const RegisterClosings = () => {
 
         // Convert documents to objects
         const cierreDocs = querySnapshot.docs.map((doc) => {
-          const fecha = doc.data().fecha; // Obtienes la fecha del documento
           return {
             id: doc.id,
             ...doc.data(),
@@ -73,26 +62,6 @@ export const RegisterClosings = () => {
 
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
-  };
-
-  const handleUpdateData = (updatedData: any) => {
-    setSelectedData(updatedData);
-  };
-
-  const handleSave = async () => {
-    const confirmSave = window.confirm(
-      "¿Desea guardar los cambios realizados?"
-    );
-    if (confirmSave) {
-      try {
-        const docRef = doc(dataBase, "cierresCaja", selectedData.id); // Reference to the document
-        await updateDoc(docRef, selectedData); // Update the document with the modified data
-        alert("✅ Los cambios se han guardado correctamente.");
-      } catch (error) {
-        console.error("❌ Error al guardar los cambios:", error);
-        alert("❌ Ocurrió un error al guardar los cambios.");
-      }
-    }
   };
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -210,18 +179,8 @@ export const RegisterClosings = () => {
       )}
       {showForm && (
         <div className="reviewContainer">
-          <ReviewForm
-            closingData={selectedData}
-            cierreId={selectedData.id}
-          />
+          <ReviewForm closingData={selectedData} cierreId={selectedData.id} />
           <div className="my-3">
-            {/* <button
-              type="submit"
-              className="btn btn-primary mb-5"
-              onClick={handleSave}
-            >
-              Guardar
-            </button> */}
             <button
               type="button"
               className="btn btn-secondary ms-3 mb-5"

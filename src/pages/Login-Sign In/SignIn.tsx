@@ -1,6 +1,5 @@
 import { ReactNode, useState } from "react";
 import { createUser } from "../../api/usersFirebase";
-import { useNavigate } from "react-router-dom";
 import Toast from "../../components/toast/Toast";
 
 interface Props {
@@ -13,7 +12,6 @@ function SignIn({ setShowForm }: Props) {
   const [password, setPassword] = useState("");
   const [showToast, setShowToast] = useState(false); // State to control toast visibility
   const [toastMessage, setToastMessage] = useState(""); // State to control toast message
-  const navigate = useNavigate();
 
   const handleCreateUser = async () => {
     try {

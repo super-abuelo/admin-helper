@@ -40,7 +40,7 @@ function LoginForm({ setShowForm, setUser }: Props) {
           setUser(user); // Now setUser gets a properly typed user
           console.log("User logged in:", user);
           navigate("/cierrecaja", {
-            state: { message: `👋 Bienvenido, ${user.username}!` },
+            state: { message: `👋 ¡Bienvenid@, ${user.username}!` },
           }); // Redirect to the home page
         }
       }
