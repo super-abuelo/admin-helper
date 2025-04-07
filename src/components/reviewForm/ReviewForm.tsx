@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import "./ReviewForm.css";
 import { getCierreCaja } from "../../api/getFirebaseDoc";
 import loadingGif from "../../assets/loading.gif";
-import { allData } from "../../pages/CashClosing/CashClosing";
+import { doc, updateDoc } from "firebase/firestore";
+import { dataBase } from "../../api/Firebase";
 
 function ReviewForm({
   closingData,
@@ -39,8 +40,6 @@ function ReviewForm({
     const updatedFacturasPagadas = newValues.facturasPagadas ?? 0;
     const updatedNotasCredito = newValues.notasCredito ?? 0;
 
-    console.log();
-
     // Calculate total bruto
     const totalBruto =
       updatedApertura +
@@ -64,26 +63,19 @@ function ReviewForm({
     const updatedDatafonosBCR = newValues.datafonosBCR ?? 0;
     const updatedPagoProveedores = newValues.pagoProveedores ?? 0;
     const updatedRetirosDeCaja = newValues.retirosDeCaja ?? 0;
-
-    console.log(`Colones: ${updatedColones}`);
-    console.log(`datafonosBAC: ${updatedDatafonosBAC}`);
-    console.log(`datafonosBCR: ${updatedDatafonosBCR}`);
-    console.log(`pagoProveedores: ${updatedPagoProveedores}`);
-    console.log(`retirosCaja: ${updatedRetirosDeCaja}`);
-    console.log(`efectivoTotal: ${efectivoTotal}`);
-    console.log(`monedasTotal: ${monedasTotal}`);
-    console.log(`creditos: ${creditos}`);
-    console.log(`total: ${data.totalAmounts.total}`);
+    const updatedMonedas = monedasTotal ?? 0;
+    const updatedEfectivo = efectivoTotal ?? 0;
+    const updatedCreditos = creditos ?? 0;
 
     // Calculate total (only adding colones, not dólares)
     const newTotal =
-      efectivoTotal +
-      monedasTotal +
+      updatedEfectivo +
+      updatedMonedas +
       updatedColones +
       updatedDatafonosBAC +
       updatedDatafonosBCR +
       updatedPagoProveedores +
-      creditos +
+      updatedCreditos +
       updatedRetirosDeCaja;
 
     return newTotal;
@@ -93,20 +85,29 @@ function ReviewForm({
     return total - totalBruto;
   };
 
-  const handleChange = (section: string, field: string, value: number) => {
+  const handleChange = (
+    section: string | null,
+    field: string,
+    value: number
+  ) => {
     console.log(field + " : " + value);
 
     setData((prevData: any) => {
-      const updatedData = {
-        ...prevData,
-        [section]: {
-          ...prevData[section],
-          [field]: value, // dynamically update the field within the section
-        },
-      };
+      const updatedData = section
+        ? {
+            ...prevData,
+            [section]: {
+              ...prevData[section],
+              [field]: value, // dynamically update the field within the section
+            },
+          }
+        : {
+            ...prevData,
+            [field]: value, // update the field directly at the top level
+          };
 
       // Recalculate totals after each change
-      const { cashOpening, totalAmounts } = updatedData;
+      const { cashOpening, totalAmounts, services } = updatedData;
 
       const totalBruto = calculateTotalBruto(cashOpening);
       const total = calculateTotal(
@@ -115,13 +116,13 @@ function ReviewForm({
         updatedData.efectivoTotal,
         updatedData.monedasTotal
       );
-      const diferencia = recalculateDiferencia(
-        data.totalAmounts.total,
-        totalBruto
-      );
+
+      const diferencia = recalculateDiferencia(total, totalBruto);
+      const totalBAC = services.serviciosBAC + services.depositosBAC;
+      const totalTucan = services.serviciosTucan + services.depositosTucan;
 
       console.log(
-        `totalbruto: ${totalBruto} total: ${data.totalAmounts.total} diferencia: ${diferencia}`
+        `totalbruto: ${totalBruto} total: ${total} diferencia: ${diferencia}`
       );
 
       return {
@@ -135,8 +136,29 @@ function ReviewForm({
           total,
           diferencia,
         },
+        services: {
+          ...updatedData.services,
+          totalBAC,
+          totalTucan,
+        },
       };
     });
+  };
+
+  const handleSave = async () => {
+    const confirmSave = window.confirm(
+      "¿Desea guardar los cambios realizados?"
+    );
+    if (confirmSave) {
+      try {
+        const docRef = doc(dataBase, "cierresCaja", cierreId); // Reference to the document
+        await updateDoc(docRef, data); // Update the document with the modified data
+        alert("✅ Los cambios se han guardado correctamente.");
+      } catch (error) {
+        console.error("❌ Error al guardar los cambios:", error);
+        alert("❌ Ocurrió un error al guardar los cambios.");
+      }
+    }
   };
 
   return (
@@ -159,6 +181,12 @@ function ReviewForm({
               }}
             >
               {!isEditing ? "Editar" : "Editando"}
+            </button>
+            <button
+              className="btn btn-primary shadow ms-3"
+              onClick={handleSave} // Call handleSave on click
+            >
+              Guardar
             </button>
             <button
               onClick={() => {
@@ -205,7 +233,15 @@ function ReviewForm({
                   className="form-control text-center"
                   readOnly={!isEditing}
                   value={data.creditosTotal}
-                  //hacer lo del boton y tabla
+                  onChange={(e) => {
+                    if (isEditing) {
+                      handleChange(
+                        null,
+                        "creditosTotal",
+                        Number(e.target.value)
+                      );
+                    }
+                  }}
                 />
               </div>
             </div>
@@ -349,11 +385,11 @@ function ReviewForm({
                   value={data.services.serviciosBAC}
                   onChange={(e) => {
                     if (isEditing) {
-                      // handleChange(
-                      //   "services",
-                      //   "serviciosBAC",
-                      //   Number(e.target.value)
-                      // );
+                      handleChange(
+                        "services",
+                        "serviciosBAC",
+                        Number(e.target.value)
+                      );
                     }
                   }}
                 />
@@ -380,6 +416,15 @@ function ReviewForm({
                   className="form-control text-center"
                   readOnly={!isEditing}
                   value={data.services.depositosBAC}
+                  onChange={(e) => {
+                    if (isEditing) {
+                      handleChange(
+                        "services",
+                        "depositosBAC",
+                        Number(e.target.value)
+                      );
+                    }
+                  }}
                 />
               </div>
             </div>
@@ -393,6 +438,15 @@ function ReviewForm({
                   className="form-control text-center"
                   readOnly={!isEditing}
                   value={data.efectivoTotal}
+                  onChange={(e) => {
+                    if (isEditing) {
+                      handleChange(
+                        null,
+                        "efectivoTotal",
+                        Number(e.target.value)
+                      );
+                    }
+                  }}
                 />
               </div>
               <div className="col-2 d-flex justify-content-start align-items-center">
@@ -417,6 +471,15 @@ function ReviewForm({
                   className="form-control text-center"
                   readOnly={!isEditing}
                   value={data.monedasTotal}
+                  onChange={(e) => {
+                    if (isEditing) {
+                      handleChange(
+                        null,
+                        "monedasTotal",
+                        Number(e.target.value)
+                      );
+                    }
+                  }}
                 />
               </div>
               <div className="col-2 d-flex justify-content-start align-items-center">
@@ -428,6 +491,15 @@ function ReviewForm({
                   className="form-control text-center"
                   readOnly={!isEditing}
                   value={data.services.avanceBAC}
+                  onChange={(e) => {
+                    if (isEditing) {
+                      handleChange(
+                        "services",
+                        "avanceBAC",
+                        Number(e.target.value)
+                      );
+                    }
+                  }}
                 />
               </div>
             </div>
@@ -443,15 +515,28 @@ function ReviewForm({
                   value={data.totalAmounts.dolares}
                   onChange={(e) => {
                     if (isEditing) {
-                      handleChange(
-                        "totalAmounts",
-                        "dolares",
-                        Number(e.target.value)
+                      const dolaresValue = Number(e.target.value);
+                      const updatedColones = dolaresValue * 490;
+                      handleChange("totalAmounts", "colones", updatedColones);
+
+                      setData((prevData: any) => {
+                        const updatedColones = dolaresValue * 490; // Calculate colones based on dolares
+                        return {
+                          ...prevData,
+                          totalAmounts: {
+                            ...prevData.totalAmounts,
+                            dolares: dolaresValue,
+                            colones: updatedColones,
+                          },
+                        };
+                      });
+                      console.log(
+                        "Updated dolares:",
+                        data.totalAmounts.dolares
                       );
-                      handleChange(
-                        "totalAmounts",
-                        "colones",
-                        Number(e.target.value) * 490
+                      console.log(
+                        "Updated colones:",
+                        data.totalAmounts.colones
                       );
                     }
                   }}
@@ -472,6 +557,15 @@ function ReviewForm({
                   className="form-control text-center"
                   readOnly={!isEditing}
                   value={data.services.serviciosTucan}
+                  onChange={(e) => {
+                    if (isEditing) {
+                      handleChange(
+                        "services",
+                        "serviciosTucan",
+                        Number(e.target.value)
+                      );
+                    }
+                  }}
                 />
               </div>
             </div>
@@ -505,6 +599,15 @@ function ReviewForm({
                   className="form-control text-center"
                   readOnly={!isEditing}
                   value={data.services.depositosTucan}
+                  onChange={(e) => {
+                    if (isEditing) {
+                      handleChange(
+                        "services",
+                        "depositosTucan",
+                        Number(e.target.value)
+                      );
+                    }
+                  }}
                 />
               </div>
             </div>
@@ -571,6 +674,15 @@ function ReviewForm({
                   className="form-control text-center"
                   readOnly={!isEditing}
                   value={data.services.avanceBCR}
+                  onChange={(e) => {
+                    if (isEditing) {
+                      handleChange(
+                        "services",
+                        "avanceBCR",
+                        Number(e.target.value)
+                      );
+                    }
+                  }}
                 />
               </div>
             </div>

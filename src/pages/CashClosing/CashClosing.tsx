@@ -9,8 +9,6 @@ import TotalAmounts from "../../components/totalAmounts/TotalAmounts";
 import "animate.css";
 import { addParentDocument } from "../../api/addFirebaseDoc";
 import SuperMarketSelect from "../../components/superMarketSelect/SuperMarketSelect";
-import ClosingModal from "../../components/closingModal/ClosingModal";
-import { Navigate, useNavigate } from "react-router-dom";
 import { User } from "../../App";
 
 const getFormattedDate = (): string => {
