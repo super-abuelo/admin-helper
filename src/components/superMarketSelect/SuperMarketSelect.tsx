@@ -31,10 +31,7 @@ function SuperMarketSelect({
           value={selectedSuper}
           onChange={(e) => {
             const superValue = e.target.value;
-
             setSelectedSuper(superValue);
-            console.log(superValue);
-            
             updateFields({ superMercado: Number.parseInt(e.target.value) });
           }}
         >

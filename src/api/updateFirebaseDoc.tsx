@@ -1,4 +1,4 @@
-import { collection, doc, setDoc, updateDoc, writeBatch } from "firebase/firestore";
+import { doc, setDoc, updateDoc } from "firebase/firestore";
 import { dataBase } from "./Firebase";
 
 export async function updateParentDocument(collectionPath: string, id: string, data: any) {
@@ -46,7 +46,6 @@ export async function updateAllSubcollections(id: string, data: any) {
       await setDoc(subRef, sub.data, { merge: true }); // Use merge to update fields without overwriting
     }
 
-    console.log("✅ All subcollections updated successfully!");
   } catch (error) {
     console.error("❌ Error updating subcollections:", error);
     throw new Error("❌ Error updating subcollections.");

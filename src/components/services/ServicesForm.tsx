@@ -127,7 +127,6 @@ function ServicesForm({
                   depositosTucan:
                     inputValue === "" ? 0 : Number.parseInt(inputValue),
                 });
-                console.log("????");
                 updateFields({
                   depositosTucan: Number.parseInt(e.target.value),
                 });

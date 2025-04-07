@@ -33,8 +33,6 @@ export const RegisterClosings = () => {
             ...doc.data(),
           };
         });
-
-        console.log("✅ Fetched cierresCaja documents:", cierreDocs);
         setData(cierreDocs);
       } catch (error) {
         console.error("Error fetching cierresCaja:", error);

@@ -37,8 +37,7 @@ function LoginForm({ setShowForm, setUser }: Props) {
             role: userData.role, // Default role if not found
           };
 
-          setUser(user); // Now setUser gets a properly typed user
-          console.log("User logged in:", user);
+          setUser(user); // Now setUser gets a properly typed users
           navigate("/cierrecaja", {
             state: { message: `👋 ¡Bienvenid@, ${user.username}!` },
           }); // Redirect to the home page

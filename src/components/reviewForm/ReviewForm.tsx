@@ -95,8 +95,6 @@ function ReviewForm({
     field: string,
     value: number
   ) => {
-    console.log(field + " : " + value);
-
     setData((prevData: any) => {
       const updatedData = section
         ? {
@@ -125,10 +123,6 @@ function ReviewForm({
       const diferencia = recalculateDiferencia(total, totalBruto);
       const totalBAC = services.serviciosBAC + services.depositosBAC;
       const totalTucan = services.serviciosTucan + services.depositosTucan;
-
-      console.log(
-        `totalbruto: ${totalBruto} total: ${total} diferencia: ${diferencia}`
-      );
 
       return {
         ...updatedData,
@@ -544,14 +538,6 @@ function ReviewForm({
                           },
                         };
                       });
-                      console.log(
-                        "Updated dolares:",
-                        data.totalAmounts.dolares
-                      );
-                      console.log(
-                        "Updated colones:",
-                        data.totalAmounts.colones
-                      );
                     }
                   }}
                 />

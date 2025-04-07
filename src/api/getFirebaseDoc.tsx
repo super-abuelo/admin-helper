@@ -7,10 +7,8 @@ export async function getDocument(collectionPath: string, docId: string) {
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
-      console.log("Document data:", docSnap.data());
       return docSnap.data().cashOpening;
     } else {
-      console.log("No such document!");
       return null;
     }
   } catch (error) {
@@ -56,7 +54,6 @@ export async function getCierreCaja(id: string) {
       ...subcollectionData, // All subcollections data
     };
 
-    console.log("✅ Document data:", finalData);
     return finalData;
   } catch (error) {
     console.error("❌ Error getting document:", error);
@@ -78,7 +75,6 @@ export async function getAllCierresCaja() {
       ...doc.data(), // Include the document fields
     }));
 
-    console.log("✅ All cierresCaja documents:", allCierresCaja);
     return allCierresCaja;
   } catch (error) {
     console.error("❌ Error retrieving cierresCaja documents:", error);
