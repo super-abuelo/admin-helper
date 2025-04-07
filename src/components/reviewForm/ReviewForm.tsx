@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import "./ReviewForm.css";
 import { getCierreCaja } from "../../api/getFirebaseDoc";
 import loadingGif from "../../assets/loading.gif";
+import { allData } from "../../pages/CashClosing/CashClosing";
 
 function ReviewForm({
   closingData,
@@ -30,42 +31,113 @@ function ReviewForm({
     fetchData(); // Call the async function inside useEffect
   }, [cierreId]);
 
-  const recalculateTotals = (updatedData: any) => {
-    const { cashOpening, totalAmounts } = updatedData;
-  
+  const calculateTotalBruto = (newValues: Partial<any>) => {
+    // Ensure updated values are used if provided
+    const updatedApertura = newValues.apertura ?? 0;
+    const updatedFacturasProcesadas = newValues.facturasProcesadas ?? 0;
+    const updatedReintegros = newValues.reintegros ?? 0;
+    const updatedFacturasPagadas = newValues.facturasPagadas ?? 0;
+    const updatedNotasCredito = newValues.notasCredito ?? 0;
+
+    console.log();
+
+    // Calculate total bruto
     const totalBruto =
-      (cashOpening.apertura || 0) +
-      (cashOpening.facturasProcesadas || 0) +
-      (cashOpening.reintegros || 0) +
-      (cashOpening.facturasPagadas || 0) -
-      (cashOpening.notasCredito || 0);
-  
-    const total =
-      (totalAmounts.efectivoTotal || 0) +
-      (totalAmounts.monedasTotal || 0) +
-      (totalAmounts.colones || 0) +
-      (totalAmounts.datafonosBAC || 0) +
-      (totalAmounts.datafonosBCR || 0) +
-      (totalAmounts.pagoProveedores || 0) + 
-      (data.creditosTotal || 0) + 
-      (totalAmounts.retirosDeCaja || 0);
-  
-    const diferencia = total - totalBruto;
-  
-    return {
-      ...updatedData,
-      cashOpening: {
-        ...updatedData.cashOpening,
-        totalBruto,
-      },
-      totalAmounts: {
-        ...updatedData.totalAmounts,
-        total,
-        diferencia,
-      },
-    };
+      updatedApertura +
+      updatedFacturasProcesadas +
+      updatedReintegros +
+      updatedFacturasPagadas -
+      updatedNotasCredito;
+
+    return totalBruto;
   };
-  
+
+  const calculateTotal = (
+    newValues: Partial<any>,
+    creditos: number,
+    efectivoTotal: number,
+    monedasTotal: number
+  ) => {
+    // Ensure updated values are used if provided
+    const updatedColones = newValues.colones ?? 0;
+    const updatedDatafonosBAC = newValues.datafonosBAC ?? 0;
+    const updatedDatafonosBCR = newValues.datafonosBCR ?? 0;
+    const updatedPagoProveedores = newValues.pagoProveedores ?? 0;
+    const updatedRetirosDeCaja = newValues.retirosDeCaja ?? 0;
+
+    console.log(`Colones: ${updatedColones}`);
+    console.log(`datafonosBAC: ${updatedDatafonosBAC}`);
+    console.log(`datafonosBCR: ${updatedDatafonosBCR}`);
+    console.log(`pagoProveedores: ${updatedPagoProveedores}`);
+    console.log(`retirosCaja: ${updatedRetirosDeCaja}`);
+    console.log(`efectivoTotal: ${efectivoTotal}`);
+    console.log(`monedasTotal: ${monedasTotal}`);
+    console.log(`creditos: ${creditos}`);
+    console.log(`total: ${data.totalAmounts.total}`);
+
+    // Calculate total (only adding colones, not dólares)
+    const newTotal =
+      efectivoTotal +
+      monedasTotal +
+      updatedColones +
+      updatedDatafonosBAC +
+      updatedDatafonosBCR +
+      updatedPagoProveedores +
+      creditos +
+      updatedRetirosDeCaja;
+
+    return newTotal;
+  };
+
+  const recalculateDiferencia = (total: number, totalBruto: number) => {
+    return total - totalBruto;
+  };
+
+  const handleChange = (section: string, field: string, value: number) => {
+    console.log(field + " : " + value);
+
+    setData((prevData: any) => {
+      const updatedData = {
+        ...prevData,
+        [section]: {
+          ...prevData[section],
+          [field]: value, // dynamically update the field within the section
+        },
+      };
+
+      // Recalculate totals after each change
+      const { cashOpening, totalAmounts } = updatedData;
+
+      const totalBruto = calculateTotalBruto(cashOpening);
+      const total = calculateTotal(
+        totalAmounts,
+        updatedData.creditosTotal,
+        updatedData.efectivoTotal,
+        updatedData.monedasTotal
+      );
+      const diferencia = recalculateDiferencia(
+        data.totalAmounts.total,
+        totalBruto
+      );
+
+      console.log(
+        `totalbruto: ${totalBruto} total: ${data.totalAmounts.total} diferencia: ${diferencia}`
+      );
+
+      return {
+        ...updatedData,
+        cashOpening: {
+          ...updatedData.cashOpening,
+          totalBruto,
+        },
+        totalAmounts: {
+          ...updatedData.totalAmounts,
+          total,
+          diferencia,
+        },
+      };
+    });
+  };
 
   return (
     <div className="my-2">
@@ -86,19 +158,23 @@ function ReviewForm({
                 setIsEditing(!isEditing);
               }}
             >
-              Editar
+              {!isEditing ? "Editar" : "Editando"}
             </button>
-            <button onClick={() => {
-              console.log(data);
-              
-            }}> aaa</button>
+            <button
+              onClick={() => {
+                console.log(data);
+              }}
+            >
+              {" "}
+              aaa
+            </button>
           </div>
           <div className="container">
             <div className="row my-2 justify-content-center">
               <div className="mb-3 d-flex justify-content-evenly">
                 <h5>Fecha: {closingData.fecha}</h5>
                 <h5>Cajero: {closingData.usuario}</h5>
-                <h5>Súper: {closingData.super}</h5>
+                <h5>Súper: {closingData.superMercado}</h5>
               </div>
               <div className="col-2 d-flex justify-content-start align-items-center">
                 <label>Apertura:</label>
@@ -111,14 +187,11 @@ function ReviewForm({
                   value={data.cashOpening.apertura}
                   onChange={(e) => {
                     if (isEditing) {
-                      const newValue = Number(e.target.value);
-                      setData((prevData: any) => recalculateTotals({
-                        ...prevData,
-                        cashOpening: {
-                          ...prevData.cashOpening,
-                          apertura: newValue,
-                        },
-                      }));
+                      handleChange(
+                        "cashOpening",
+                        "apertura",
+                        Number(e.target.value)
+                      );
                     }
                   }}
                 />
@@ -148,14 +221,11 @@ function ReviewForm({
                   value={data.cashOpening.facturasProcesadas}
                   onChange={(e) => {
                     if (isEditing) {
-                      const newValue = Number(e.target.value);
-                      setData((prevData: any) => recalculateTotals({
-                        ...prevData,
-                        cashOpening: {
-                          ...prevData.cashOpening,
-                          facturasProcesadas: newValue,
-                        },
-                      }));
+                      handleChange(
+                        "cashOpening",
+                        "facturasProcesadas",
+                        Number(e.target.value)
+                      );
                     }
                   }}
                 />
@@ -169,18 +239,15 @@ function ReviewForm({
                   className="form-control text-center"
                   readOnly={!isEditing}
                   value={data.totalAmounts.retirosDeCaja}
-                  // onChange={(e) => {
-                  //   if (isEditing) {
-                  //     const newValue = Number(e.target.value);
-                  //     setData((prevData: any) => recalculateTotals({
-                  //       ...prevData,
-                  //       cashOpening: {
-                  //         ...prevData.cashOpening,
-                  //         apertura: newValue,
-                  //       },
-                  //     }));
-                  //   }
-                  // }}
+                  onChange={(e) => {
+                    if (isEditing) {
+                      handleChange(
+                        "totalAmounts",
+                        "retirosDeCaja",
+                        Number(e.target.value)
+                      );
+                    }
+                  }}
                 />
               </div>
             </div>
@@ -196,14 +263,11 @@ function ReviewForm({
                   value={data.cashOpening.reintegros}
                   onChange={(e) => {
                     if (isEditing) {
-                      const newValue = Number(e.target.value);
-                      setData((prevData: any) => recalculateTotals({
-                        ...prevData,
-                        cashOpening: {
-                          ...prevData.cashOpening,
-                          reintegros: newValue,
-                        },
-                      }));
+                      handleChange(
+                        "cashOpening",
+                        "reintegros",
+                        Number(e.target.value)
+                      );
                     }
                   }}
                 />
@@ -232,14 +296,11 @@ function ReviewForm({
                   value={data.cashOpening.facturasPagadas}
                   onChange={(e) => {
                     if (isEditing) {
-                      const newValue = Number(e.target.value);
-                      setData((prevData: any) => recalculateTotals({
-                        ...prevData,
-                        cashOpening: {
-                          ...prevData.cashOpening,
-                          facturasPagadas: newValue,
-                        },
-                      }));
+                      handleChange(
+                        "cashOpening",
+                        "facturasPagadas",
+                        Number(e.target.value)
+                      );
                     }
                   }}
                 />
@@ -252,7 +313,7 @@ function ReviewForm({
                   type="number"
                   className="form-control text-center"
                   readOnly={!isEditing}
-                  value={data.totalAmounts.total - data.cashOpening.totalBruto}
+                  value={data.totalAmounts.diferencia}
                 />
               </div>
             </div>
@@ -268,14 +329,11 @@ function ReviewForm({
                   value={data.cashOpening.notasCredito}
                   onChange={(e) => {
                     if (isEditing) {
-                      const newValue = Number(e.target.value);
-                      setData((prevData: any) => recalculateTotals({
-                        ...prevData,
-                        cashOpening: {
-                          ...prevData.cashOpening,
-                          notasCredito: newValue,
-                        },
-                      }));
+                      handleChange(
+                        "cashOpening",
+                        "notasCredito",
+                        Number(e.target.value)
+                      );
                     }
                   }}
                 />
@@ -289,6 +347,15 @@ function ReviewForm({
                   className="form-control text-center"
                   readOnly={!isEditing}
                   value={data.services.serviciosBAC}
+                  onChange={(e) => {
+                    if (isEditing) {
+                      // handleChange(
+                      //   "services",
+                      //   "serviciosBAC",
+                      //   Number(e.target.value)
+                      // );
+                    }
+                  }}
                 />
               </div>
             </div>
@@ -374,6 +441,20 @@ function ReviewForm({
                   className="form-control text-center w-50"
                   readOnly={!isEditing}
                   value={data.totalAmounts.dolares}
+                  onChange={(e) => {
+                    if (isEditing) {
+                      handleChange(
+                        "totalAmounts",
+                        "dolares",
+                        Number(e.target.value)
+                      );
+                      handleChange(
+                        "totalAmounts",
+                        "colones",
+                        Number(e.target.value) * 490
+                      );
+                    }
+                  }}
                 />
                 <input
                   type="number"
@@ -404,18 +485,15 @@ function ReviewForm({
                   className="form-control text-center"
                   readOnly={!isEditing}
                   value={data.totalAmounts.datafonosBAC}
-                  // onChange={(e) => {
-                  //   if (isEditing) {
-                  //     const newValue = Number(e.target.value);
-                  //     setData((prevData: any) => recalculateTotals({
-                  //       ...prevData,
-                  //       cashOpening: {
-                  //         ...prevData.cashOpening,
-                  //         apertura: newValue,
-                  //       },
-                  //     }));
-                  //   }
-                  // }}
+                  onChange={(e) => {
+                    if (isEditing) {
+                      handleChange(
+                        "totalAmounts",
+                        "datafonosBAC",
+                        Number(e.target.value)
+                      );
+                    }
+                  }}
                 />
               </div>
               <div className="col-2 d-flex justify-content-start align-items-center">
@@ -440,6 +518,15 @@ function ReviewForm({
                   className="form-control text-center"
                   readOnly={!isEditing}
                   value={data.totalAmounts.datafonosBCR}
+                  onChange={(e) => {
+                    if (isEditing) {
+                      handleChange(
+                        "totalAmounts",
+                        "datafonosBCR",
+                        Number(e.target.value)
+                      );
+                    }
+                  }}
                 />
               </div>
               <div className="col-2 d-flex justify-content-start align-items-center">
@@ -464,6 +551,15 @@ function ReviewForm({
                   className="form-control text-center"
                   readOnly={!isEditing}
                   value={data.totalAmounts.pagoProveedores}
+                  onChange={(e) => {
+                    if (isEditing) {
+                      handleChange(
+                        "totalAmounts",
+                        "pagoProveedores",
+                        Number(e.target.value)
+                      );
+                    }
+                  }}
                 />
               </div>
               <div className="col-2 d-flex justify-content-start align-items-center">
