@@ -5,7 +5,7 @@ import LoginForm from "./LoginForm";
 import { User } from "../../App";
 
 interface Props {
-  user: User,
+  user: User | null;
   setUser: (user: User | null) => void;
 }
 
@@ -14,6 +14,7 @@ export const Login = ({user, setUser}: Props) => {
 
   return (
     <div>
+      
       {showForm ? (
         <SignIn setShowForm={setShowForm} />
       ) : (

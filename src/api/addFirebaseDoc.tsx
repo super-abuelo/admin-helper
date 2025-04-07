@@ -36,11 +36,11 @@ async function addAllSubcollections(id: string, data: any) {
 
     // Define all subcollections inside a single batch
     const subcollections = [
-      { name: "cashOpening", data: data.cashOpening },
-      { name: "totalAmounts", data: data.totalAmounts },
-      { name: "services", data: data.services },
-      { name: "denominaciones", data: data.denominaciones },
-      { name: "denominacionesMonedas", data: data.denominacionesMonedas },
+      { name: "cashOpening", data: data.cashOpening, docId: "cashOpening" },
+      { name: "totalAmounts", data: data.totalAmounts, docId: "totalAmounts" },
+      { name: "services", data: data.services, docId: "services" },
+      { name: "denominaciones", data: data.denominaciones, docId: "denominaciones" },
+      { name: "denominacionesMonedas", data: data.denominacionesMonedas, docId: "denominacionesMonedas" },
     ];
 
     // Add all subcollections in a loop

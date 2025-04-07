@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import "./Navbar.css";
 import { User } from "../../App";
 
@@ -9,6 +9,13 @@ export const NavBar = ({
   user: User | null;
   setUser: (user: User | null) => void;
 }) => {
+  const navigate = useNavigate();
+
+  const handleSignOut = () => {
+    setUser(null); // Clear the user state
+    navigate("/"); // Redirect to the login page
+  };
+
   return (
     <div className="navbar-container">
       <nav className="navbar">
@@ -28,6 +35,16 @@ export const NavBar = ({
                 <NavLink to={"/cierresrealizados"}>Cierres Realizados</NavLink>
               </>
             )}
+            <NavLink
+              to="/"
+              onClick={(e) => {
+              e.preventDefault(); // Prevent default navigation
+              handleSignOut(); // Call the sign-out handler
+              }}
+              className="text-danger"
+            >
+              Cerrar Sesión
+            </NavLink>
             {/* <NavLink to={"/home"}></NavLink> */}
           </div>
         </div>

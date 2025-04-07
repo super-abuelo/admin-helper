@@ -6,7 +6,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { dataBase } from "../../api/Firebase";
 
 interface Props {
-  user: User
+  user: User | null;
   setShowForm: Function;
   children?: ReactNode;
   setUser: (user: User | null) => void;
@@ -39,7 +39,9 @@ function LoginForm({ setShowForm, setUser }: Props) {
 
           setUser(user); // Now setUser gets a properly typed user
           console.log("User logged in:", user);
-          navigate("/cierrecaja"); // Redirect to the home page
+          navigate("/cierrecaja", {
+            state: { message: `👋 Bienvenido, ${user.username}!` },
+          }); // Redirect to the home page
         }
       }
     } catch (error) {

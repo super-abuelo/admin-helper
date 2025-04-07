@@ -11,7 +11,7 @@ export interface User {
 }
 function App() {
 
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   return (
     <Router>
       <Layout user={user} setUser={setUser}>

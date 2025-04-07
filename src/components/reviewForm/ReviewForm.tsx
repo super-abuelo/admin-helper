@@ -2,8 +2,11 @@ import { useEffect, useState } from "react";
 import "./ReviewForm.css";
 import { getCierreCaja } from "../../api/getFirebaseDoc";
 import loadingGif from "../../assets/loading.gif";
-import { doc, updateDoc } from "firebase/firestore";
-import { dataBase } from "../../api/Firebase";
+import {
+  updateAllSubcollections,
+  updateParentDocument,
+} from "../../api/updateFirebaseDoc";
+import Toast from "../toast/Toast";
 
 function ReviewForm({
   closingData,
@@ -15,6 +18,8 @@ function ReviewForm({
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<any>([]);
+  const [showToast, setShowToast] = useState(false); // State to control toast visibility
+  const [toastMessage, setToastMessage] = useState(""); // State to control toast message
 
   useEffect(() => {
     const fetchData = async () => {
@@ -151,18 +156,35 @@ function ReviewForm({
     );
     if (confirmSave) {
       try {
-        const docRef = doc(dataBase, "cierresCaja", cierreId); // Reference to the document
-        await updateDoc(docRef, data); // Update the document with the modified data
-        alert("✅ Los cambios se han guardado correctamente.");
+        // Update the parent document
+        await updateParentDocument("cierresCaja", cierreId, data);
+
+        // Update all subcollections
+        await updateAllSubcollections(cierreId, data);
+        //getbootstrap.com/docs/5.3/components/toasts/
+
+        https: setToastMessage("✅ Los cambios se han guardado correctamente.");
+        setShowToast(true);
+
+        setIsEditing(false); // Disable editing mode after saving
       } catch (error) {
         console.error("❌ Error al guardar los cambios:", error);
-        alert("❌ Ocurrió un error al guardar los cambios.");
+
+        // Show error toast
+        setToastMessage("❌ Ocurrió un error al guardar los cambios.");
+        setShowToast(true);
       }
     }
   };
 
   return (
     <div className="my-2">
+      <Toast
+        message={toastMessage}
+        show={showToast}
+        onClose={() => setShowToast(false)}
+        duration={3000}
+      />
       {loading ? (
         <div>
           <div className="d-flex justify-content-center mt-5">
@@ -187,14 +209,6 @@ function ReviewForm({
               onClick={handleSave} // Call handleSave on click
             >
               Guardar
-            </button>
-            <button
-              onClick={() => {
-                console.log(data);
-              }}
-            >
-              {" "}
-              aaa
             </button>
           </div>
           <div className="container">

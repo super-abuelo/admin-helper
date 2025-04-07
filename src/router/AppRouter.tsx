@@ -6,7 +6,7 @@ import { RegisterClosings } from "../pages/RegisterClosings/RegisterClosings";
 import { User } from "../App";
 
 interface Props {
-  user: User,
+  user: User | null;
   setUser: (user: User | null) => void;
 }
 

@@ -10,6 +10,8 @@ import "animate.css";
 import { addParentDocument } from "../../api/addFirebaseDoc";
 import SuperMarketSelect from "../../components/superMarketSelect/SuperMarketSelect";
 import { User } from "../../App";
+import Toast from "../../components/toast/Toast";
+import { useLocation } from "react-router-dom";
 
 const getFormattedDate = (): string => {
   const today = new Date();
@@ -131,7 +133,7 @@ export const initialData: allData = {
   caja: 0,
 };
 interface Props {
-  user: User;
+  user: User | null;
 }
 export const CashClosing = ({ user }: Props) => {
   // const navigate = useNavigate();
@@ -171,13 +173,30 @@ export const CashClosing = ({ user }: Props) => {
       caja: fields.caja ?? prev.caja,
     }));
   };
-
+  
+  const location = useLocation();
   const [data, setData] = useState(initialData);
+  const [showToast, setShowToast] = useState(false); // State to control toast visibility
+  const [toastMessage, setToastMessage] = useState(""); // State to control toast message
+
+  useEffect(() => {
+    // Check if a message was passed via navigate state
+    if (location.state?.message) {
+      setToastMessage(location.state.message);
+      setShowToast(true);
+
+      // Hide the toast after 5 seconds
+      setTimeout(() => {
+        setShowToast(false);
+      }, 5000);
+    }
+  }, [location.state]);
+
   //const [animation, setAnimation] = useState<string>("animate__fadeIn");
   const { currentStepIndex, step, isFirstStep, isLastStep, back, next, goTo } =
     useMultistepForm([
       <SuperMarketSelect
-        usuario={(data.usuario = user.username)}
+        usuario={(data.usuario = user?.username || "")}
         fecha={data.fecha}
         superMercado={data.superMercado}
         caja={data.caja}
@@ -228,9 +247,18 @@ export const CashClosing = ({ user }: Props) => {
         "¿Desea finalizar? Una vez enviado no podrá modificar la información."
       );
       if (confirmacion) {
-        addParentDocument("cierresCaja", data);
-        setData(initialData);
-        goTo(0);
+        addParentDocument("cierresCaja", data)
+          .then(() => {
+            setToastMessage("✅ Cierre finalizado correctamente.");
+            setShowToast(true);
+            setData(initialData);
+            goTo(0);
+          })
+          .catch((error) => {
+            console.error("❌ Error al finalizar el cierre:", error);
+            setToastMessage("❌ Error al finalizar el cierre.");
+            setShowToast(true);
+          });
       }
     }
   }
@@ -258,6 +286,12 @@ export const CashClosing = ({ user }: Props) => {
     }*/
   return (
     <div>
+      <Toast
+        message={toastMessage}
+        show={showToast}
+        onClose={() => setShowToast(false)}
+        duration={3000} // Optional: Auto-hide after 5 seconds
+      />
       <form onSubmit={onSubmit}>
         {step}
         <div
@@ -282,15 +316,6 @@ export const CashClosing = ({ user }: Props) => {
               {isLastStep ? "Finalizar" : "Siguiente"}
             </button>
           }
-          <button
-            type="button"
-            className="btn btn-light shadow"
-            onClick={() => {
-              console.log(data);
-            }}
-          >
-            aaa
-          </button>
         </div>
       </form>
     </div>
