@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { User } from "../../App";
 import { doc, getDoc } from "firebase/firestore";
 import { dataBase } from "../../api/Firebase";
+import logo from "../../assets/logo.png";
 
 interface Props {
   user: User | null;
@@ -52,7 +53,7 @@ function LoginForm({ setShowForm, setUser }: Props) {
     <div className="d-flex justify-content-center">
       <div className="card mt-3 p-4 w-50 rounded-4">
         <div className="h-50">
-          <img src="src/assets/logo.png" alt="" height={100} />
+          <img src={logo} alt="" height={100} />
         </div>
         <div className="container">
           <div className="row my-3 align-items-center justify-content-center">

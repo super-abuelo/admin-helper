@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import "./Navbar.css";
 import { User } from "../../App";
+import logo from "../../assets/logo.png";
 
 export const NavBar = ({
   user,
@@ -20,7 +21,7 @@ export const NavBar = ({
     <div className="navbar-container">
       <nav className="navbar">
         <div className="container-fluid">
-          <img src="src/assets/logo.png" alt="" height={70} />
+          <img src={logo} alt="" height={70} />
           <div className="tabs">
             {/* <NavLink to={"/home"}>Inicio</NavLink> */}
 

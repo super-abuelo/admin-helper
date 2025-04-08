@@ -1,6 +1,7 @@
 import { ReactNode, useState } from "react";
 import { createUser } from "../../api/usersFirebase";
 import Toast from "../../components/toast/Toast";
+import logo from "../../assets/logo.png";
 
 interface Props {
   setShowForm: Function;
@@ -50,7 +51,7 @@ function SignIn({ setShowForm }: Props) {
       />
       <div className="card mt-3 p-4 w-50 rounded-4">
         <div className="h-50">
-          <img src="src/assets/logo.png" alt="" height={100} />
+          <img src={logo} alt="" height={100} />
         </div>
         <div className="container">
           <div className="row my-3 align-items-center justify-content-center">
