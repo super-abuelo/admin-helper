@@ -77,10 +77,6 @@ export type allData = {
   creditosTotal: number;
 };
 
-const getDate = (): string => {
-  const today = new Date();
-  return today.toISOString().split("T")[0]; // Returns "yyyy-MM-dd"
-};
 export const initialData: allData = {
   cashOpening: {
     apertura: 0,
