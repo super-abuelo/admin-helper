@@ -76,6 +76,11 @@ export type allData = {
   monedasTotal: number;
   creditosTotal: number;
 };
+
+const getDate = (): string => {
+  const today = new Date();
+  return today.toISOString().split("T")[0]; // Returns "yyyy-MM-dd"
+};
 export const initialData: allData = {
   cashOpening: {
     apertura: 0,
@@ -166,7 +171,7 @@ export const CashClosing = ({ user }: Props) => {
       caja: fields.caja ?? prev.caja,
     }));
   };
-  
+
   const location = useLocation();
   const [data, setData] = useState(initialData);
   const [showToast, setShowToast] = useState(false); // State to control toast visibility
@@ -280,6 +285,18 @@ export const CashClosing = ({ user }: Props) => {
               {isLastStep ? "Finalizar" : "Siguiente"}
             </button>
           }
+          <button
+            onClick={() => {
+              console.log(data);
+              const fechaString = data.fecha; // "14/4/2025"
+              const [day, month, year] = fechaString.split("/");
+              const formattedDate = `${year}-${month}-${day}`; // Convert to "2025-04-14"
+              const fecha = new Date(formattedDate);
+              console.log("Processed fecha value:", fecha.toISOString());
+            }}
+          >
+            aaa
+          </button>
         </div>
       </form>
     </div>

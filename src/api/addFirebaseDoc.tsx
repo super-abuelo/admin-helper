@@ -7,18 +7,25 @@ export async function addParentDocument(collectionPath: string, data: any) {
     const collectionRef = collection(dataBase, collectionPath);
 
     // Se agrega un nuevo documento con los datos proporcionados
-
+    console.log("Raw fecha value:", data.fecha);
+    const fechaString = data.fecha; // "14/4/2025"
+    const [day, month, year] = fechaString.split("/");
+    const formattedDate = `${year}-${month}-${day}`; // Convert to "2025-04-14"
+    const fecha = new Date(formattedDate)
+    console.log("Processed fecha value:", fecha);
     const baseData = {
       creditosData: data.creditosData,
       efectivoTotal: data.efectivoTotal,
       monedasTotal: data.monedasTotal,
       creditosTotal: data.creditosTotal,
-      fecha: new Date(data.fecha).toISOString().split('T')[0],
+      fecha: formattedDate,
       superMercado: data.superMercado,
       usuario: data.usuario,
       caja: data.caja,
     };
     const newDocRef = await addDoc(collectionRef, baseData);
+    console.log(baseData.fecha);
+
     console.log("Nuevo documento agregado con ID:", newDocRef.id);
 
     addAllSubcollections(newDocRef.id, data);
@@ -39,8 +46,16 @@ async function addAllSubcollections(id: string, data: any) {
       { name: "cashOpening", data: data.cashOpening, docId: "cashOpening" },
       { name: "totalAmounts", data: data.totalAmounts, docId: "totalAmounts" },
       { name: "services", data: data.services, docId: "services" },
-      { name: "denominaciones", data: data.denominaciones, docId: "denominaciones" },
-      { name: "denominacionesMonedas", data: data.denominacionesMonedas, docId: "denominacionesMonedas" },
+      {
+        name: "denominaciones",
+        data: data.denominaciones,
+        docId: "denominaciones",
+      },
+      {
+        name: "denominacionesMonedas",
+        data: data.denominacionesMonedas,
+        docId: "denominacionesMonedas",
+      },
     ];
 
     // Add all subcollections in a loop
