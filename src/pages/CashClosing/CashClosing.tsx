@@ -281,18 +281,6 @@ export const CashClosing = ({ user }: Props) => {
               {isLastStep ? "Finalizar" : "Siguiente"}
             </button>
           }
-          <button
-            onClick={() => {
-              console.log(data);
-              const fechaString = data.fecha; // "14/4/2025"
-              const [day, month, year] = fechaString.split("/");
-              const formattedDate = `${year}-${month}-${day}`; // Convert to "2025-04-14"
-              const fecha = new Date(formattedDate);
-              console.log("Processed fecha value:", fecha.toISOString());
-            }}
-          >
-            aaa
-          </button>
         </div>
       </form>
     </div>
