@@ -75,17 +75,19 @@ export const RegisterClosings = () => {
   return (
     <div>
       <h1 className="my-3">Cierres de Caja Realizados</h1>
-      <div className="d-flex justify-content-center my-3">
-        <select
-          className="form-select w-25"
-          value={selectedSuper ?? ""}
-          onChange={(e) => setSelectedSuper(Number(e.target.value))}
-        >
-          <option value="">Seleccionar Súper</option>
-          <option value="1">Súper 1</option>
-          <option value="2">Súper 2</option>
-        </select>
-      </div>
+      {!showForm && (
+        <div className="d-flex justify-content-center my-3">
+          <select
+            className="form-select w-25"
+            value={selectedSuper ?? ""}
+            onChange={(e) => setSelectedSuper(Number(e.target.value))}
+          >
+            <option value="">Seleccionar Súper</option>
+            <option value="1">Súper El Abuelo #1</option>
+            <option value="2">Súper El Abuelo #2</option>
+          </select>
+        </div>
+      )}
       {!showForm && (
         <div className="d-flex justify-content-center">
           <table className="table table-striped table-bordered w-75 shadow">

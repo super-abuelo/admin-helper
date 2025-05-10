@@ -207,10 +207,11 @@ function ReviewForm({
           </div>
           <div className="container">
             <div className="row my-2 justify-content-center">
-              <div className="mb-3 d-flex justify-content-evenly">
-                <h5>Fecha: {closingData.fecha}</h5>
-                <h5>Cajero: {closingData.usuario}</h5>
-                <h5>Súper: {closingData.superMercado}</h5>
+              <div className="mb-3 d-flex justify-content-center">
+                <h5 className="mx-3">Fecha: {closingData.fecha}</h5>
+                <h5 className="mx-3">Súper: {closingData.superMercado}</h5>
+                <h5 className="mx-3">Cajero: {closingData.usuario}</h5>
+                <h5 className="mx-3">Caja: {closingData.caja}</h5>
               </div>
               <div className="col-2 d-flex justify-content-start align-items-center">
                 <label>Apertura:</label>
@@ -220,7 +221,7 @@ function ReviewForm({
                   type="number"
                   className="form-control text-center"
                   readOnly={!isEditing}
-                  value={data.cashOpening.apertura.toFixed(2)}
+                  value={data.cashOpening.apertura}
                   onChange={(e) => {
                     if (isEditing) {
                       handleChange(
@@ -240,7 +241,7 @@ function ReviewForm({
                   type="number"
                   className="form-control text-center"
                   readOnly={!isEditing}
-                  value={data.creditosTotal.toFixed(2)}
+                  value={data.creditosTotal}
                   onChange={(e) => {
                     if (isEditing) {
                       handleChange(
@@ -262,7 +263,7 @@ function ReviewForm({
                   type="number"
                   className="form-control text-center"
                   readOnly={!isEditing}
-                  value={data.cashOpening.facturasProcesadas.toFixed(2)}
+                  value={data.cashOpening.facturasProcesadas}
                   onChange={(e) => {
                     if (isEditing) {
                       handleChange(
@@ -282,7 +283,7 @@ function ReviewForm({
                   type="number"
                   className="form-control text-center"
                   readOnly={!isEditing}
-                  value={data.totalAmounts.retirosDeCaja.toFixed(2)}
+                  value={data.totalAmounts.retirosDeCaja}
                   onChange={(e) => {
                     if (isEditing) {
                       handleChange(
@@ -304,7 +305,7 @@ function ReviewForm({
                   type="number"
                   className="form-control text-center"
                   readOnly={!isEditing}
-                  value={data.cashOpening.reintegros.toFixed(2)}
+                  value={data.cashOpening.reintegros}
                   onChange={(e) => {
                     if (isEditing) {
                       handleChange(
@@ -337,7 +338,7 @@ function ReviewForm({
                   type="number"
                   className="form-control text-center"
                   readOnly={!isEditing}
-                  value={data.cashOpening.facturasPagadas.toFixed(2)}
+                  value={data.cashOpening.facturasPagadas}
                   onChange={(e) => {
                     if (isEditing) {
                       handleChange(
@@ -370,7 +371,7 @@ function ReviewForm({
                   type="number"
                   className="form-control text-center"
                   readOnly={!isEditing}
-                  value={data.cashOpening.notasCredito.toFixed(2)}
+                  value={data.cashOpening.notasCredito}
                   onChange={(e) => {
                     if (isEditing) {
                       handleChange(
@@ -390,7 +391,7 @@ function ReviewForm({
                   type="number"
                   className="form-control text-center"
                   readOnly={!isEditing}
-                  value={data.services.serviciosBAC.toFixed(2)}
+                  value={data.services.serviciosBAC}
                   onChange={(e) => {
                     if (isEditing) {
                       handleChange(
@@ -423,7 +424,7 @@ function ReviewForm({
                   type="number"
                   className="form-control text-center"
                   readOnly={!isEditing}
-                  value={data.services.depositosBAC.toFixed(2)}
+                  value={data.services.depositosBAC}
                   onChange={(e) => {
                     if (isEditing) {
                       handleChange(
@@ -498,7 +499,7 @@ function ReviewForm({
                   type="number"
                   className="form-control text-center"
                   readOnly={!isEditing}
-                  value={data.services.avanceBAC.toFixed(2)}
+                  value={data.services.avanceBAC}
                   onChange={(e) => {
                     if (isEditing) {
                       handleChange(
@@ -556,7 +557,7 @@ function ReviewForm({
                   type="number"
                   className="form-control text-center"
                   readOnly={!isEditing}
-                  value={data.services.serviciosTucan.toFixed(2)}
+                  value={data.services.serviciosTucan}
                   onChange={(e) => {
                     if (isEditing) {
                       handleChange(
@@ -578,7 +579,7 @@ function ReviewForm({
                   type="number"
                   className="form-control text-center"
                   readOnly={!isEditing}
-                  value={data.totalAmounts.datafonosBAC.toFixed(2)}
+                  value={data.totalAmounts.datafonosBAC}
                   onChange={(e) => {
                     if (isEditing) {
                       handleChange(
@@ -598,7 +599,7 @@ function ReviewForm({
                   type="number"
                   className="form-control text-center"
                   readOnly={!isEditing}
-                  value={data.services.depositosTucan.toFixed(2)}
+                  value={data.services.depositosTucan}
                   onChange={(e) => {
                     if (isEditing) {
                       handleChange(
@@ -620,7 +621,7 @@ function ReviewForm({
                   type="number"
                   className="form-control text-center"
                   readOnly={!isEditing}
-                  value={data.totalAmounts.datafonosBCR.toFixed(2)}
+                  value={data.totalAmounts.datafonosBCR}
                   onChange={(e) => {
                     if (isEditing) {
                       handleChange(
@@ -653,7 +654,7 @@ function ReviewForm({
                   type="number"
                   className="form-control text-center"
                   readOnly={!isEditing}
-                  value={data.totalAmounts.pagoProveedores.toFixed(2)}
+                  value={data.totalAmounts.pagoProveedores}
                   onChange={(e) => {
                     if (isEditing) {
                       handleChange(
@@ -673,7 +674,7 @@ function ReviewForm({
                   type="number"
                   className="form-control text-center"
                   readOnly={!isEditing}
-                  value={data.services.avanceBCR.toFixed(2)}
+                  value={data.services.avanceBCR}
                   onChange={(e) => {
                     if (isEditing) {
                       handleChange(

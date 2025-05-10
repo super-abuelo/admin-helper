@@ -42,14 +42,14 @@ function TotalAmounts({
 
     // Calculate new total (only adding colones, not dólares)
     const newTotal =
-      efectivoTotal +
+      parseFloat((efectivoTotal +
       monedasTotal +
       creditosTotal +
       updatedColones + // ✅ Use colones (which was calculated from dólares)
       updatedDatafonosBAC +
       updatedDatafonosBCR +
       updatedPagoProveedores +
-      updatedRetirosDeCaja;
+      updatedRetirosDeCaja).toFixed(2));
 
     // Calculate diferencia after total is updated
     const newDiferencia = parseFloat((newTotal - (totalBruto ?? 0)).toFixed(2));
