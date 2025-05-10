@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
 import ReviewForm from "../../components/reviewForm/ReviewForm";
-import {
-  collection,
-  getDocs,
-  orderBy,
-  query,
-} from "firebase/firestore";
+import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
 import { dataBase } from "../../api/Firebase";
 
 export const RegisterClosings = () => {
@@ -15,34 +10,45 @@ export const RegisterClosings = () => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1); // State for current page
   const [itemsPerPage] = useState(8);
+  const [selectedSuper, setSelectedSuper] = useState<number | null>(null);
 
   useEffect(() => {
-    const fetchCierres = async () => {
-      try {
-        const collectionRef = collection(dataBase, "cierresCaja");
-
-        // Create a query to order by the 'fecha' field in descending order (most recent first)
-        const q = query(collectionRef, orderBy("fecha", "desc"));
-
-        const querySnapshot = await getDocs(q);
-
-        // Convert documents to objects
-        const cierreDocs = querySnapshot.docs.map((doc) => {
-          return {
-            id: doc.id,
-            ...doc.data(),
-          };
-        });
-        setData(cierreDocs);
-      } catch (error) {
-        console.error("Error fetching cierresCaja:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchCierres();
-  }, []);
+  }, [selectedSuper]);
+
+  const fetchCierres = async () => {
+    try {
+      const collectionRef = collection(dataBase, "cierresCaja");
+
+      let q;
+      if (selectedSuper) {
+        // Filter by the selected superMercado
+        q = query(
+          collectionRef,
+          where("superMercado", "==", selectedSuper),
+          orderBy("fecha", "desc")
+        );
+      } else {
+        // Fetch all documents if no filter is selected
+        q = query(collectionRef, orderBy("fecha", "desc"));
+      }
+
+      const querySnapshot = await getDocs(q);
+
+      // Convert documents to objects
+      const cierreDocs = querySnapshot.docs.map((doc) => {
+        return {
+          id: doc.id,
+          ...doc.data(),
+        };
+      });
+      setData(cierreDocs);
+    } catch (error) {
+      console.error("Error fetching cierresCaja:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleRowClick = (data: any) => {
     setSelectedData(data);
@@ -69,6 +75,17 @@ export const RegisterClosings = () => {
   return (
     <div>
       <h1 className="my-3">Cierres de Caja Realizados</h1>
+      <div className="d-flex justify-content-center my-3">
+        <select
+          className="form-select w-25"
+          value={selectedSuper ?? ""}
+          onChange={(e) => setSelectedSuper(Number(e.target.value))}
+        >
+          <option value="">Seleccionar Súper</option>
+          <option value="1">Súper 1</option>
+          <option value="2">Súper 2</option>
+        </select>
+      </div>
       {!showForm && (
         <div className="d-flex justify-content-center">
           <table className="table table-striped table-bordered w-75 shadow">
