@@ -121,7 +121,7 @@ function CreditsForm({
             <tr>
               <td>Total</td>
               <td colSpan={2} className="text-center">
-                {creditosTotal}
+                {creditosTotal.toFixed(2)}
               </td>
             </tr>
           </tfoot>

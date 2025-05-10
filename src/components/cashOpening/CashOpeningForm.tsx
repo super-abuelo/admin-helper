@@ -142,7 +142,7 @@ function CashOpeningForm({ cashOpening, updateFields }: CashOpeningProps) {
             />
           </div>
           <div className="col-2 d-flex justify-content-start align-items-center">
-            <label>Total Bruto:</label>
+            <label className="fw-semibold">Total Bruto:</label>
           </div>
           <div className="col-2">
             <input
@@ -150,11 +150,11 @@ function CashOpeningForm({ cashOpening, updateFields }: CashOpeningProps) {
               className="form-control text-center"
               readOnly
               value={
-                apertura +
+                (apertura +
                 facturasProcesadas +
                 reintegros +
                 facturasPagadas -
-                notasCredito
+                notasCredito).toFixed(2)
               }
               onChange={(e) => {
                 updateFields({ totalBruto: Number.parseInt(e.target.value) });

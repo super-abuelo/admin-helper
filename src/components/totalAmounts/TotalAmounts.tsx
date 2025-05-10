@@ -52,7 +52,7 @@ function TotalAmounts({
       updatedRetirosDeCaja;
 
     // Calculate diferencia after total is updated
-    const newDiferencia = newTotal - (totalBruto ?? 0);
+    const newDiferencia = parseFloat((newTotal - (totalBruto ?? 0)).toFixed(2));
 
     // Update all at once to prevent async state issues
     updateFields({
@@ -88,12 +88,12 @@ function TotalAmounts({
               value={datafonosBCR}
               onChange={(e) => {
                 const inputValue = e.target.value;
-                calculateTotal({
-                  datafonosBCR: Number(e.target.value) || 0,
-                });
                 updateFields({
                   datafonosBCR:
                     inputValue === "" ? 0 : Number.parseInt(inputValue),
+                });
+                calculateTotal({
+                  datafonosBCR: Number(e.target.value) || 0,
                 });
               }}
             />
@@ -189,13 +189,14 @@ function TotalAmounts({
               value={datafonosBAC}
               onChange={(e) => {
                 const inputValue = e.target.value;
-                calculateTotal({
-                  datafonosBAC: Number(e.target.value) || 0,
-                });
                 updateFields({
                   datafonosBAC:
                     inputValue === "" ? 0 : Number.parseInt(inputValue),
                 });
+                calculateTotal({
+                  datafonosBAC: Number(e.target.value) || 0,
+                });
+                
               }}
             />
           </div>
@@ -222,7 +223,7 @@ function TotalAmounts({
         </div>
         <div className="row my-2 justify-content-center">
           <div className="col-2 d-flex justify-content-start align-items-center">
-            <label>Total:</label>
+            <label className="fw-semibold">Total:</label>
           </div>
           <div className="col-2">
             <input
@@ -230,26 +231,26 @@ function TotalAmounts({
               className="form-control text-center"
               readOnly
               value={
-                efectivoTotal +
+                (efectivoTotal +
                 monedasTotal +
                 colones! +
                 datafonosBAC! +
                 datafonosBCR! +
                 pagoProveedores! +
                 creditosTotal +
-                retirosDeCaja!
+                retirosDeCaja!).toFixed(2)
               }
             />
           </div>
           <div className="col-2 d-flex justify-content-start align-items-center">
-            <label>Diferencia:</label>
+            <label className="fw-semibold">Diferencia:</label>
           </div>
           <div className="col-2">
             <input
               type="number"
               className="form-control text-center"
               readOnly
-              value={total! - totalBruto!}
+              value={(total! - totalBruto!).toFixed(2)}
               onChange={(e) => {
                 updateFields({ diferencia: Number.parseInt(e.target.value) });
               }}
@@ -258,7 +259,7 @@ function TotalAmounts({
         </div>
         <div className="row my-3 justify-content-center">
           <div className="col">
-            <label> Total Bruto: {totalBruto}</label>
+            <label className="fw-semibold"> Total Bruto: {totalBruto}</label>
           </div>
         </div>
       </div>

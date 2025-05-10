@@ -21,7 +21,7 @@ function ServicesForm({
   },
   totalAmounts: { total },
   cashOpening: { totalBruto },
-  totalAmounts: {diferencia},
+  totalAmounts: { diferencia },
   updateFields,
 }: ServicesProps) {
   const calculateDifferenceBac = (
@@ -61,10 +61,10 @@ function ServicesForm({
               value={serviciosBAC}
               onChange={(e) => {
                 const inputValue = e.target.value;
-                updateFields({ serviciosBAC: Number.parseInt(e.target.value) });
+                updateFields({ serviciosBAC: Number.parseFloat(inputValue) });
                 calculateDifferenceBac({
                   serviciosBAC:
-                    inputValue === "" ? 0 : Number.parseInt(inputValue),
+                    inputValue === "" ? 0 : Number.parseFloat(inputValue),
                 });
               }}
             />
@@ -81,10 +81,7 @@ function ServicesForm({
                 const inputValue = e.target.value;
                 calculateDifferenceBcr({
                   serviciosTucan:
-                    inputValue === "" ? 0 : Number.parseInt(inputValue),
-                });
-                updateFields({
-                  serviciosTucan: Number.parseInt(e.target.value),
+                    inputValue === "" ? 0 : Number.parseFloat(inputValue),
                 });
               }}
             />
@@ -105,7 +102,6 @@ function ServicesForm({
                   depositosBAC:
                     inputValue === "" ? 0 : Number.parseInt(inputValue),
                 });
-
                 calculateDifferenceBac({
                   depositosBAC:
                     inputValue === "" ? 0 : Number.parseInt(inputValue),
@@ -136,31 +132,25 @@ function ServicesForm({
         </div>
         <div className="row my-2 justify-content-center">
           <div className="col-2 d-flex justify-content-start align-items-center">
-            <label>Total BAC:</label>
+            <label className="fw-semibold">Total BAC:</label>
           </div>
           <div className="col-2 d-flex">
             <input
               type="number"
               className="form-control text-center"
-              value={totalBAC}
+              value={totalBAC?.toFixed(2)}
               readOnly
-              onChange={(e) =>
-                updateFields({ totalBAC: Number.parseInt(e.target.value) })
-              }
             />
           </div>
           <div className="col-2 d-flex justify-content-start align-items-center">
-            <label>Total Tucán:</label>
+            <label className="fw-semibold">Total Tucán:</label>
           </div>
           <div className="col-2">
             <input
               type="number"
               className="form-control text-center"
-              value={totalTucan}
+              value={totalTucan?.toFixed(2)}
               readOnly
-              onChange={(e) =>
-                updateFields({ totalTucan: Number.parseInt(e.target.value) })
-              }
             />
           </div>
         </div>
@@ -172,7 +162,6 @@ function ServicesForm({
             <input
               type="number"
               className="form-control text-center"
-              
               value={avanceBAC}
               onChange={(e) => {
                 const inputValue = e.target.value;
@@ -211,13 +200,13 @@ function ServicesForm({
         </div>
         <div className="row my-2 justify-content-center">
           <div className="col-2">
-            <label> Total B: {totalBruto}</label>
+            <label className="fw-semibold"> Total B: {totalBruto}</label>
           </div>
           <div className="col-2">
-            <label> Total: {total}</label>
+            <label className="fw-semibold"> Total: {total}</label>
           </div>
           <div className="col-2">
-            <label> Diferencia: {diferencia}</label>
+            <label className="fw-semibold"> Diferencia: {diferencia}</label>
           </div>
         </div>
       </div>
