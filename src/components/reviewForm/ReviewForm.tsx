@@ -687,6 +687,21 @@ function ReviewForm({
                 />
               </div>
             </div>
+            <div className="row my-2 justify-content-center">
+          <label className="my-2">Notas:</label>
+          <textarea
+            className="form-control my-1 w-50"
+            value={data.services.notas}
+            readOnly={!isEditing}
+            onChange={(e) => {if (isEditing) {
+              handleChange(
+                "services",
+                "notas",
+                Number(e.target.value)
+              );
+            }}}
+          ></textarea>
+        </div>
           </div>
         </div>
       )}
