@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react";
 import ReviewForm from "../../components/reviewForm/ReviewForm";
-import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  orderBy,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { dataBase } from "../../api/Firebase";
 
 export const RegisterClosings = () => {
@@ -36,9 +44,10 @@ export const RegisterClosings = () => {
       const querySnapshot = await getDocs(q);
 
       // Convert documents to objects
-      const cierreDocs = querySnapshot.docs.map((doc) => {
+      let cierreDocs = querySnapshot.docs.map((doc) => {
         return {
           id: doc.id,
+          fecha: doc.data().fecha,
           ...doc.data(),
         };
       });
@@ -49,6 +58,36 @@ export const RegisterClosings = () => {
       setLoading(false);
     }
   };
+
+  //   function pad(n: number) {
+  //     return n < 10 ? "0" + n : n;
+  //   }
+
+  //   function normalizeDate(fecha: string): string {
+  //     // Handles both "YYYY-M-D" and "YYYY-MM-DD"
+  //     const parts = fecha.split("-");
+  //     if (parts.length !== 3) return fecha; // fallback if unexpected format
+  //     const year = parts[0];
+  //     const month = pad(Number(parts[1]));
+  //     const day = pad(Number(parts[2]));
+  //     return `${year}-${month}-${day}`;
+  //   }
+
+  //   async function normalizeAllCierresFechas() {
+  //   const cierresRef = collection(dataBase, "cierresCaja");
+  //   const snapshot = await getDocs(cierresRef);
+
+  //   for (const docSnap of snapshot.docs) {
+  //     const data = docSnap.data();
+  //     if (data.fecha) {
+  //       const normalized = normalizeDate(data.fecha);
+  //       if (normalized !== data.fecha) {
+  //         await updateDoc(doc(cierresRef, docSnap.id), { fecha: normalized });
+  //         console.log(`Updated ${docSnap.id}: ${data.fecha} -> ${normalized}`);
+  //       }
+  //     }
+  //   }
+  // }
 
   const handleRowClick = (data: any) => {
     setSelectedData(data);
@@ -71,6 +110,20 @@ export const RegisterClosings = () => {
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Pagination window logic
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const pageWindow = 5; // Number of page buttons to show
+  let startPage = Math.max(1, currentPage - Math.floor(pageWindow / 2));
+  let endPage = startPage + pageWindow - 1;
+  if (endPage > totalPages) {
+    endPage = totalPages;
+    startPage = Math.max(1, endPage - pageWindow + 1);
+  }
+  const pageNumbers = [];
+  for (let i = startPage; i <= endPage; i++) {
+    pageNumbers.push(i);
+  }
 
   return (
     <div>
@@ -154,38 +207,65 @@ export const RegisterClosings = () => {
                   Anterior
                 </button>
               </li>
-
-              {[...Array(Math.ceil(data.length / itemsPerPage))].map(
-                (_, index) => (
-                  <li
-                    key={index + 1}
-                    className={`page-item ${
-                      index + 1 === currentPage ? "active" : ""
-                    }`}
-                  >
+              {startPage > 1 && (
+                <>
+                  <li className="page-item">
                     <button
                       className="page-link"
-                      onClick={() => handlePageChange(index + 1)}
+                      onClick={() => handlePageChange(1)}
                     >
-                      {index + 1}
+                      1
                     </button>
                   </li>
-                )
+                  {startPage > 2 && (
+                    <li className="page-item disabled">
+                      <span className="page-link">...</span>
+                    </li>
+                  )}
+                </>
               )}
+              {pageNumbers.map((page) => (
+                <li
+                  key={page}
+                  className={`page-item ${
+                    page === currentPage ? "active" : ""
+                  }`}
+                >
+                  <button
+                    className="page-link"
+                    onClick={() => handlePageChange(page)}
+                  >
+                    {page}
+                  </button>
+                </li>
+              ))}
 
+              {endPage < totalPages && (
+                <>
+                  {endPage < totalPages - 1 && (
+                    <li className="page-item disabled">
+                      <span className="page-link">...</span>
+                    </li>
+                  )}
+                  <li className="page-item">
+                    <button
+                      className="page-link"
+                      onClick={() => handlePageChange(totalPages)}
+                    >
+                      {totalPages}
+                    </button>
+                  </li>
+                </>
+              )}
               <li
                 className={`page-item ${
-                  currentPage === Math.ceil(data.length / itemsPerPage)
-                    ? "disabled"
-                    : ""
+                  currentPage === totalPages ? "disabled" : ""
                 }`}
               >
                 <button
                   className="page-link"
                   onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={
-                    currentPage === Math.ceil(data.length / itemsPerPage)
-                  }
+                  disabled={currentPage === totalPages}
                 >
                   Siguiente
                 </button>

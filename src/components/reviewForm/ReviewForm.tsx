@@ -93,7 +93,7 @@ function ReviewForm({
   const handleChange = (
     section: string | null,
     field: string,
-    value: number
+    value: number | string
   ) => {
     setData((prevData: any) => {
       const updatedData = section
@@ -109,7 +109,7 @@ function ReviewForm({
             [field]: value, // update the field directly at the top level
           };
 
-      // Recalculate totals after each change
+      if (typeof value === "number") {
       const { cashOpening, totalAmounts, services } = updatedData;
 
       const totalBruto = calculateTotalBruto(cashOpening);
@@ -141,7 +141,11 @@ function ReviewForm({
           totalTucan,
         },
       };
-    });
+    }
+
+    // If value is a string (e.g., notas), just update the data
+    return updatedData;
+  });
   };
 
   const handleSave = async () => {
@@ -697,7 +701,7 @@ function ReviewForm({
               handleChange(
                 "services",
                 "notas",
-                Number(e.target.value)
+                e.target.value
               );
             }}}
           ></textarea>
