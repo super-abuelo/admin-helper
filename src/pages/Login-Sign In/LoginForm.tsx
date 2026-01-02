@@ -21,6 +21,7 @@ function LoginForm({ setShowForm, setUser }: Props) {
   const handleLogin = async () => {
     try {
       const user = await loginUser(username, password);
+      console.log("Login successful:", user, password);
       if (user) {
         const authUser = user; // Firebase auth user
 

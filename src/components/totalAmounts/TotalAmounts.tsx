@@ -146,7 +146,7 @@ function TotalAmounts({
                 const inputValue =
                   e.target.value === "" ? 0 : Number.parseInt(e.target.value);
                 // Calculate colones based on updated dólares
-                const convertedColones = inputValue * 490;
+                const convertedColones = inputValue * 480;
 
                 // Update both dólares and colones
                 updateFields({

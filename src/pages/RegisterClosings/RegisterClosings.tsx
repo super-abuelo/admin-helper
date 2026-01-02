@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import ReviewForm from "../../components/reviewForm/ReviewForm";
 import {
   collection,
-  doc,
   getDocs,
   orderBy,
   query,
-  updateDoc,
   where,
+  updateDoc,
+  doc,
+
 } from "firebase/firestore";
 import { dataBase } from "../../api/Firebase";
 
@@ -59,35 +60,35 @@ export const RegisterClosings = () => {
     }
   };
 
-  //   function pad(n: number) {
-  //     return n < 10 ? "0" + n : n;
-  //   }
+    function pad(n: number) {
+      return n < 10 ? "0" + n : n;
+    }
 
-  //   function normalizeDate(fecha: string): string {
-  //     // Handles both "YYYY-M-D" and "YYYY-MM-DD"
-  //     const parts = fecha.split("-");
-  //     if (parts.length !== 3) return fecha; // fallback if unexpected format
-  //     const year = parts[0];
-  //     const month = pad(Number(parts[1]));
-  //     const day = pad(Number(parts[2]));
-  //     return `${year}-${month}-${day}`;
-  //   }
+    function normalizeDate(fecha: string): string {
+      // Handles both "YYYY-M-D" and "YYYY-MM-DD"
+      const parts = fecha.split("-");
+      if (parts.length !== 3) return fecha; // fallback if unexpected format
+      const year = parts[0];
+      const month = pad(Number(parts[1]));
+      const day = pad(Number(parts[2]));
+      return `${year}-${month}-${day}`;
+    }
 
-  //   async function normalizeAllCierresFechas() {
-  //   const cierresRef = collection(dataBase, "cierresCaja");
-  //   const snapshot = await getDocs(cierresRef);
+    async function normalizeAllCierresFechas() {
+    const cierresRef = collection(dataBase, "cierresCaja");
+    const snapshot = await getDocs(cierresRef);
 
-  //   for (const docSnap of snapshot.docs) {
-  //     const data = docSnap.data();
-  //     if (data.fecha) {
-  //       const normalized = normalizeDate(data.fecha);
-  //       if (normalized !== data.fecha) {
-  //         await updateDoc(doc(cierresRef, docSnap.id), { fecha: normalized });
-  //         console.log(`Updated ${docSnap.id}: ${data.fecha} -> ${normalized}`);
-  //       }
-  //     }
-  //   }
-  // }
+    for (const docSnap of snapshot.docs) {
+      const data = docSnap.data();
+      if (data.fecha) {
+        const normalized = normalizeDate(data.fecha);
+        if (normalized !== data.fecha) {
+          await updateDoc(doc(cierresRef, docSnap.id), { fecha: normalized });
+          console.log(`Updated ${docSnap.id}: ${data.fecha} -> ${normalized}`);
+        }
+      }
+    }
+  }
 
   const handleRowClick = (data: any) => {
     setSelectedData(data);
@@ -139,6 +140,7 @@ export const RegisterClosings = () => {
             <option value="1">Súper El Abuelo #1</option>
             <option value="2">Súper El Abuelo #2</option>
           </select>
+            {/* <button onClick={normalizeAllCierresFechas}>Normalizar Fechas</button> */}
         </div>
       )}
       {!showForm && (
